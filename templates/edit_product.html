@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Product</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  {% load static %}
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px 80px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      width: 720px;
+      transition: transform 0.3s ease;
+      border: 1px solid #ddd;
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    .container:hover {
+      transform: scale(1.01);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    /* Logo Styling */
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 150px;
+      height: auto;
+      border-radius: 12px; /* rounded edges */
+      border: 2px solid #000; /* black border */
+      padding: 6px;
+      background: #fff; /* white background */
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    label {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
+      color: #222;
+      text-align: left;
+    }
+
+    input, textarea,select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      background: #fafafa;
+      color: #000;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #000;
+      background: #fff;
+      outline: none;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #333;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- <div class="text-center mt-5"> -->
+    <a href="{% url 'vendor:vendor_home' %}" class="logo-wrapper">
+      <img src="{% static 'images/im1.png' %}" alt="Your Logo" class="logo" style="margin-top: 100px;">
+    </a>
+<!-- </div> -->
+    <h2>Edit Product</h2>
+    <form method="post" action="{% url 'vendor:edit_product' product.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" value="{{ product.name }}">
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description">{{ product.description }}</textarea>
+
+      <label for="price">Price:</label>
+      <input type="number" id="price" name="price" value="{{ product.price }}">
+
+      <label for="discount">Discount (%):</label>
+      <input type="number" id="discount" name="discount" value="{{ product.discount }}">
+
+      <label for="stock">Stock:</label>
+      <input type="number" id="stock" name="stock" value="{{product.stock}}">
+
+
+    <label for="category">Category:</label>
+<select id="category" name="category" required>
+  {% for cat in categories %}
+    <option value="{{ cat.id }}" {% if product.category.id == cat.id %}selected{% endif %}>
+      {{ cat.name }}
+    </option>
+  {% endfor %}
+</select>
+
+<p>image select</p>
+<input type="file" id="image" name="image">
+{% if product.image %}
+  <p>Current Image 1:</p>
+  
+  <img src="{{ product.image.url }}" alt="Image" width="100">
+{% endif %}
+
+<input type="file" id="image2" name="image2">
+{% if product.image2 %}
+  <p>Current Image 2:</p>
+  <img src="{{ product.image2.url }}" alt="Image 2" width="100">
+{% endif %}
+
+<input type="file" id="image3" name="image3">
+{% if product.image3 %}
+  <p>Current Image 3:</p>
+  <img src="{{ product.image3.url }}" alt="Image 3" width="100">
+{% endif %}
+
+
+
+
+
+
+
+      <button type="submit" class="btn">Save Changes</button><br><br>
+      <button class="btn">CANCEL</button>
+    </form>
+  </div>
+</body>
+</html>

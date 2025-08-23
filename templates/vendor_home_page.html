@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart Style Navbar</title>
+    {% load static %}
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Add space between nav items */
+.navbar-nav .nav-item {
+  margin-right: 45px; /* adjust this value as needed */
+}
+
+.navbar-nav .nav-item:last-child {
+  margin-right: 0; /* remove margin from last item */
+}
+
+      .navbar-nav .dropdown-menu {
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+      .navbar-nav .dropdown-menu a {
+        padding: 5px 15px;
+      }
+      /* Hover dropdown for desktop */
+      @media (min-width: 992px) {
+        .navbar-nav .dropdown:hover .dropdown-menu {
+          display: block;
+          margin-top: 0;
+        }
+      }
+
+
+
+
+
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #fff;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        font-size: 14px;
+        padding: 15px 8%;
+        color: #888;
+    }
+    .breadcrumb a {
+        color: #888;
+        text-decoration: none;
+    }
+
+    /* Header Section */
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 40px 8%;
+        flex-wrap: wrap;
+    }
+    .header-text {
+        max-width: 600px;
+    }
+    .header-text h1 {
+        font-size: 32px;
+        font-weight: bold;
+        line-height: 1.3;
+    }
+    .header-image img {
+        max-width: 250px;
+        border-radius: 10px;
+    }
+
+    /* Benefits Section */
+    .benefits {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+        padding: 20px 30px;
+        margin: -40px auto 40px;
+        max-width: 1100px;
+    }
+    .benefit-item {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        min-width: 150px;
+    }
+    .benefit-item img {
+        height: 40px;
+        margin-bottom: 10px;
+    }
+    .benefit-item p {
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+    }
+    .benefit-divider {
+        width: 1px;
+        background-color: #ddd;
+        height: 40px;
+        margin: auto;
+    }
+
+    /* Testimonial Carousel */
+    .carousel {
+        position: relative;
+        width: 1300px;
+        margin: 40px auto;
+        overflow: hidden;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    }
+    .slides {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+    .testimonial-slide {
+        min-width: 100%;
+        padding: 30px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        text-align: left;
+    }
+    .profile-pic img {
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .testimonial-content h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: #333;
+    }
+    .testimonial-content p {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.4;
+    }
+    .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 24px;
+        background: rgba(0,0,0,0.3);
+        color: white;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 50%;
+    }
+    #prev {
+        left: 10px;
+    }
+    #next {
+        right: 10px;
+    }
+    .dots {
+        display: flex;
+        justify-content: center;
+        margin: 15px 0;
+    }
+    .dot {
+        height: 10px;
+        width: 10px;
+        background: #bbb;
+        margin: 0 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .dot.active {
+        background: #333;
+    }
+
+
+
+
+    .vendor-name {
+    font-weight: 700;       /* Bold */
+    font-size: 18px;        /* Slightly larger */
+    color: #000;            /* Black */
+    cursor: default;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 3px;
+    transition: color 0.3s ease;
+    user-select: none;
+  }
+  .vendor-name::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #000;
+    left: 0;
+    bottom: 0;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+  .vendor-name:hover {
+    color: #444; /* Slightly lighter black on hover */
+  }
+  .vendor-name:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+  <div class="container-fluid">
+    
+    <!-- Logo -->
+    <a class="navbar-brand" href="{% url 'vendor:vendor_home' %}">
+      <img src="{% static 'images/im1.png' %}" alt="Logo" width="150">
+    </a>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menu Items -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <!-- Sell Online -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="sellDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Sell Online
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'vendor:vendor_register' %}">Create Account</a></li>
+            <li><a class="dropdown-item" href="{% url 'vendor:vendor' %}">List Products</a></li>
+            <li><a class="dropdown-item" href="#">View Orders</a></li>
+            <li><a class="dropdown-item" href="#">View Reviews</a></li>
+            
+            <li><a class="dropdown-item" href="#">Help & Support</a></li>
+          </ul>
+        </li>
+
+        <!-- Fees and Commission -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="feesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Fees and Commission
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Payment Cycle</a></li>
+            <li><a class="dropdown-item" href="#">Fee Type</a></li>
+            <li><a class="dropdown-item" href="#">Calculate Gross Margin</a></li>
+            <li><a class="dropdown-item" href="#">Storage & Shipping</a></li>
+            <li><a class="dropdown-item" href="#">Receive Payments</a></li>
+            <li><a class="dropdown-item" href="#">Grow Faster</a></li>
+            <li><a class="dropdown-item" href="#">Seller App</a></li>
+          </ul>
+        </li>
+
+        <!-- Grow -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="growDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Grow
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">FAssured badge</a></li>
+            <li><a class="dropdown-item" href="#">Insights & Tools</a></li>
+            <li><a class="dropdown-item" href="#">Flipkart Ads</a></li>
+            <li><a class="dropdown-item" href="#">Flipkart Value Services</a></li>
+            <li><a class="dropdown-item" href="#">Shopping Festivals</a></li>
+            <li><a class="dropdown-item" href="#">Service Partners</a></li>
+          </ul>
+        </li>
+
+        <!-- Learn -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="learnDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Learn
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">FAQs</a></li>
+            <li><a class="dropdown-item" href="#">Seller Success Stories</a></li>
+            <li><a class="dropdown-item" href="#">Seller Blogs</a></li>
+          </ul>
+        </li>
+
+        <!-- Shopsy -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'user:index' %}">Luxora</a>
+        </li>
+      </ul>
+
+      <!-- Right Side Buttons -->
+        {% if request.session.vendor_name %} <a href="{% url 'vendor:vendor' %}">
+         <span class="vendor-name">{{ request.session.vendor_email }}</span></a>
+        {% else %}
+      <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'vendor:vendor_login' %}" class="text-dark fw-semibold">Login</a>
+        <a href="{% url 'vendor:vendor_register' %}" class="btn btn-warning fw-semibold">Start Selling</a>
+      </div>
+       {% endif %}
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+    <a href="#">Home</a> &gt; <a href="#">Grow</a>
+</div>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-text">
+        <h1>Supercharge your business with<br>industry-leading tools &amp; services</h1>
+    </div>
+    <div class="header-image">
+        <img src="{% static 'images/1.png' %}" alt="Seller Image">
+    </div>
+</div>
+
+<!-- Benefits -->
+<div class="benefits">
+    <div class="benefit-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="">
+        <p>45 crore+ Flipkart customers</p>
+    </div>
+    <div class="benefit-divider"></div>
+    <div class="benefit-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/2989/2989993.png" alt="">
+        <p>7* days secure &amp; regular payments</p>
+    </div>
+    <div class="benefit-divider"></div>
+    <div class="benefit-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/929/929426.png" alt="">
+        <p>Low cost of doing business</p>
+    </div>
+    <div class="benefit-divider"></div>
+    <div class="benefit-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/1256/1256650.png" alt="">
+        <p>One click Seller Support</p>
+    </div>
+    <div class="benefit-divider"></div>
+    <div class="benefit-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="">
+        <p>Access to The Big Billion Days &amp; more</p>
+    </div>
+</div>
+
+   <div style="max-width: 1100px; margin: 40px auto 20px; padding: 0 20px;">
+    <h1 style="font-size: 28px; font-weight: bold; color: #333; text-align: center;">
+        Seller Success Stories
+    </h1>
+</div>
+
+<!-- Testimonial Carousel -->
+<div class="carousel">
+    <div class="slides">
+        <div class="testimonial-slide">
+            <div class="profile-pic">
+                <img src="{% static 'images/7.png' %}" alt="Profile">
+            </div>
+            <div class="testimonial-content">
+                <h3>Farhan Ali, Growth Pioneer</h3>
+                <p>I had no knowledge about online business, but through Seller Webinars and the Seller Support team, I learned everything step-by-step. With their guidance, my ₹36,000 business has now grown into a ₹1.5 Crore success story. I feel more confident than ever in running my business!</p>
+            </div>
+        </div>
+        <div class="testimonial-slide">
+            <div class="profile-pic">
+                <img src="{% static 'images/9.png' %}" alt="Profile">
+            </div>
+            <div class="testimonial-content">
+                <h3>Meera Joshi, E-com Queen</h3>
+                <p>I used to run a small shop, but after starting to sell online, my customer base has expanded all over India. Now, I earn ₹2 lakh per month, and I’m excited to see my sales grow every single month. Selling online has truly changed my life.</p>
+            </div>
+        </div>
+        <div class="testimonial-slide">
+            <div class="profile-pic">
+                <img src="{% static 'images/17.png' %}" alt="Profile">
+            </div>
+            <div class="testimonial-content">
+                <h3>Arjun Mehta, Brand Builder</h3>
+                <p>Before starting online selling, I was full of doubts. But the team provided me with the right training and motivation, and now I have successfully built my own brand. My products are reaching customers I never imagined, and the future looks brighter than ever!</p>
+            </div>
+        </div>
+    </div>
+    <button class="nav-btn" id="prev">&#10094;</button>
+    <button class="nav-btn" id="next">&#10095;</button>
+    <div class="dots"></div>
+</div>
+
+<script>
+    const slides = document.querySelector('.slides');
+    const slideItems = document.querySelectorAll('.testimonial-slide');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const dotsContainer = document.querySelector('.dots');
+    let index = 0;
+
+    slideItems.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => {
+            index = i;
+            updateCarousel();
+        });
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateCarousel() {
+        slides.style.transform = `translateX(${-index * 100}%)`;
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[index].classList.add('active');
+    }
+    function nextSlide() {
+        index = (index + 1) % slideItems.length;
+        updateCarousel();
+    }
+    function prevSlide() {
+        index = (index - 1 + slideItems.length) % slideItems.length;
+        updateCarousel();
+    }
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    setInterval(nextSlide, 3000);
+</script>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

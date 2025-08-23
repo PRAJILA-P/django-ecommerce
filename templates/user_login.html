@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh; margin-top:0px;">
+  <div class="card shadow p-4" style="width: 580px; border-radius: 12px; border: 1px solid #000; background: #fff;">
+    <h2 class="text-center mb-3" style="color: #000;">Login</h2>
+    <!-- <p class="text-center mb-4" style="color: #555;">Enter your credentials to continue.</p> -->
+
+    <form method="post" action="{% url 'user:user_login' %}">
+      {% csrf_token %}
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="id_email" class="form-label" style="color: #000;">Email</label>
+        <input type="email" name="email" id="id_email" class="form-control" required
+               style="border: 1px solid #000; background: #fff; color: #000;">
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="id_password" class="form-label" style="color: #000;">Password</label>
+        <input type="password" name="password" id="id_password" class="form-control" required
+               style="border: 1px solid #000; background: #fff; color: #000;">
+   
+            </div>
+
+      {% if messages %}
+  {% for message in messages %}
+    <p style="color:red; margin-left: 120px;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+
+      <!-- Buttons -->
+      <div class="d-grid gap-2 mt-4">
+        <button type="submit" class="btn" 
+                style="background: #000; color: #fff; border-radius: 8px; padding: 10px;">Login</button>
+
+      </div>
+      <div style="text-align: center;color: #000; font-size: 18px; font-weight: bold;" class="signin-link">
+        Don’t have an account? <a href="{% url 'user:user_register' %}" style=" color: #000;text-decoration: underline;">Sign Up</a>
+    </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Register | Your eCommerce</title>
+{% load static %}
+<style>
+    body {
+        background-color: #fff;
+        color: #000;
+        font-family: 'Georgia', serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .register-container {
+        background-color: #fdfdfd;
+        border: 1px solid #000;
+        padding: 25px 40px;
+        width: 500px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .register-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 30px rgba(0,0,0,0.15);
+    }
+
+    /* .logo {
+        width: 200px;
+        height: auto;
+        margin-bottom: 15px;
+    } */
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 150px;
+      height: auto;
+      border-radius: 12px; /* rounded edges */
+      border: 2px solid #000; /* black border */
+      padding: 6px;
+      background: #fff; /* white background */
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    h2 {
+        margin-bottom: 15px;
+        font-weight: normal;
+        letter-spacing: 1px;
+    }
+
+    /* Message styles */
+    .message {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    .message.error {
+        background-color: #ffe6e6;
+        color: #d8000c;
+        border: 1px solid #d8000c;
+    }
+    .message.success {
+        background-color: #e6ffed;
+        color: #4f8a10;
+        border: 1px solid #4f8a10;
+    }
+
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    input, textarea {
+        flex: 1 1 48%;
+        padding: 10px;
+        border: 1px solid #000;
+        background-color: #fff;
+        color: #000;
+        font-family: inherit;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #555;
+        background-color: #f9f9f9;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .full-width {
+        flex: 1 1 100%;
+    }
+
+    textarea {
+        resize: none;
+        height: 80px;
+    }
+
+    button {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 5px;
+        transition: background-color 0.2s ease;
+    }
+    button:hover {
+        background-color: #333;
+    }
+
+    .signin-link {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+    .signin-link a {
+        color: #000;
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+
+<div class="register-container"><a href="{% url 'vendor:vendor_home' %}" class="logo-wrapper">
+    <img src="{% static 'images/im1.png' %}" alt="Your Logo" class="logo">
+    </a>
+    <h2>Vendor Registration</h2>
+
+    
+
+    <form method="POST" action="{% url 'vendor:vendor_register' %}">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="tel" name="phone" placeholder="Number" required>
+        <input type="email" name="email" placeholder="Email" class="full-width" required>
+        <input type="text" name="company_name" placeholder="Company Name" class="full-width">
+        <textarea name="address" placeholder="Address" class="full-width"></textarea>
+        <input type="password" name="password" placeholder="Password" class="full-width" required>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" class="full-width" required>
+        <button type="submit">Create Account</button>
+    </form><br>
+    <!-- Django messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="signin-link">
+        Already have an account? <a href="{% url 'vendor:vendor_login' %}">Sign In</a>
+    </div>
+</div>
+
+</body>
+</html>

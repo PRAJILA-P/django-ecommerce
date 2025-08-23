@@ -1,0 +1,67 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow-lg p-4" style="width: 720px;border-radius: 12px; border: 1px solid #000; background: #fff;">
+    <h2 class="text-center mb-3">Create Account</h2>
+    <!-- <p class="text-center text-muted mb-4">Fill the form to register.</p> -->
+
+    <form method="post" action="{% url 'user:user_register' %}">
+      {% csrf_token %}
+
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="id_name" class="form-label">Full Name</label>
+        <input type="text" name="name" id="id_name" class="form-control" maxlength="50" required
+               style="border: 1px solid #000; background: #fff; color: #000;"value="">
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-3">
+        <label for="id_phone" class="form-label">Phone</label>
+        <input type="text" name="phone" id="id_phone" class="form-control" maxlength="20" required
+               value=""style="border: 1px solid #000; background: #fff; color: #000;">
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="id_email" class="form-label">Email</label>
+        <input type="email" name="email" id="id_email" class="form-control" required
+               value=""style="border: 1px solid #000; background: #fff; color: #000;">
+      </div>
+
+      <!-- Gender -->
+      <div class="mb-3">
+        <label for="id_gender" class="form-label">Gender</label>
+        <select name="gender" id="id_gender" class="form-select" style="border: 1px solid #000; background: #fff; color: #000;" required>
+          <option value="" disabled {% if not request.POST.gender %}selected{% endif %}>Select…</option>
+          <option value="M" >Male</option>
+          <option value="F" >Female</option>
+          <option value="O" >Other</option>
+        </select>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Password</label>
+        <input type="password" name="password" id="id_password" class="form-control" maxlength="50" style="border: 1px solid #000; background: #fff; color: #000;" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Confirm Password</label>
+        <input type="password" name="confirm_password" id="id_password" class="form-control" maxlength="50" style="border: 1px solid #000; background: #fff; color: #000;" required>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="d-grid gap-2 mt-4">
+        <button type="submit" class="btn btn-dark">Register</button>
+        <!-- <button type="reset" class="btn btn-outline-dark">Reset</button> -->
+      </div>
+    </form>
+    <div style="text-align: center;color: #000; font-size: 18px; font-weight: bold;" class="signin-link">
+        Already have an account? <a href="{% url 'user:user_login' %}" style=" color: #000;text-decoration: underline;">Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

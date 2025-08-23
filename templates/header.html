@@ -1,0 +1,167 @@
+{% load static %}
+
+<style>
+  .search-input {
+    min-width: 300px;
+    width: 100%;
+  }
+
+  @media (max-width: 992px) {
+    .search-input {
+      min-width: unset;
+    }
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand" href="{% url 'user:index' %}">
+      <img src="{% static 'images/im.png' %}" alt="Logo" width="170" height="100" class="d-inline-block align-text-top">
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible Content -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between w-100 gap-3 mt-3 mt-lg-0">
+        
+        <!-- Search Form -->
+        <form class="d-flex flex-grow-1" role="search">
+          <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-dark" type="submit">Search</button>
+        </form>
+
+        <!-- Nav Links -->
+        <ul class="navbar-nav d-flex flex-row flex-lg-row gap-3 ms-lg-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+             {% if request.session.user_id %}
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Account
+            </a>
+           
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'user:user_profile' %}">Profile</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'user:user_logout' %}">logout</a></li>
+            </ul>
+
+           
+          </li>
+          {% else %}
+
+          <a class="nav-link dropdown-toggle" href="{% url 'user:user_login' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Login
+            </a>
+           
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'user:user_login' %}">Login</a></li>
+              <li><a class="dropdown-item" href="{% url 'user:user_register' %}">Register</a></li>
+              <!-- <li><a class="dropdown-item" href="#">Another action</a></li> -->
+              <!-- <li><hr class="dropdown-divider"></li> -->
+              <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+            </ul>
+
+           
+          </li>
+          {% endif %}
+
+
+           
+
+           
+          <!-- <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'user:user_register' %}">register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'user:user_login' %}">login</a>
+          </li> -->
+          <!-- <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'user:user_profile' %}">profile</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'vendor:vendor_home' %}">Become a Seller</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li> -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+<!-- 
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    
+    <a class="navbar-brand" href="#">
+      <img src="{% static 'images/img.png' %}" alt="Logo" width="200" height="140" class="d-inline-block align-text-top">
+    </a>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+   
+    <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
+      
+      
+      <form class="d-flex" role="search">
+        <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+      
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+
+
+
+
+
+
+<!-- <nav class="navbar bg-body-tertiary">
+  <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+  <img src="{% static 'images/img.png' %}" alt="Logo" width="200" height="140" class="d-inline-block align-text-top">
+  
+</a>
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+      <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+  </div>
+</nav> -->

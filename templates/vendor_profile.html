@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vendor Profile | Your eCommerce</title>
+  {% load static %}
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #fefefe;
+      color: #111;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      align-items: flex-start;
+      padding: 40px 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .profile-container {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 40px 50px;
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.1),
+        0 8px 20px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .profile-container:hover {
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.15),
+        0 15px 40px rgba(0, 0, 0, 0.1);
+      transform: translateY(-6px);
+    }
+
+    /* .logo {
+      width: 180px;
+      margin-bottom: 30px;
+      filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.15));
+      transition: filter 0.3s ease;
+    }
+    .logo:hover {
+      filter: drop-shadow(4px 4px 3px rgba(0,0,0,0.25));
+    } */
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 150px;
+      height: auto;
+      border-radius: 12px; /* rounded edges */
+      border: 2px solid #000; /* black border */
+      padding: 6px;
+      background: #fff; /* white background */
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      margin-bottom: 20px;
+      font-weight: normal;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #000;
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    .vendor-details {
+      text-align: left;
+      margin-bottom: 40px;
+      font-size: 17px;
+      line-height: 1.8;
+      color: #222;
+      border-top: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      padding: 20px 0;
+    }
+
+    .vendor-details p {
+      margin: 12px 0;
+      transition: color 0.3s ease;
+    }
+    .vendor-details p:hover {
+      color: #000;
+      font-weight: 600;
+    }
+
+    .vendor-details strong {
+      display: inline-block;
+      width: 140px;
+      color: #444;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .btn {
+        height: 15px;
+      flex: 1 1 calc(50% - 20px);
+      padding: 14px 0;
+      background: #000;
+      color: #fff;
+      border: 2px solid #000;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      user-select: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.2s ease,
+        box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.5s ease;
+      z-index: 1;
+    }
+    .btn:hover::before {
+      left: 125%;
+    }
+    .btn:hover {
+      background-color: #fff;
+      color: #000;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+      transform: translateY(-4px);
+      border-color: #000;
+      z-index: 2;
+    }
+
+    /* Logout button full width */
+    .btn.logout {
+        width: 400px;
+        height: 45px;
+      flex-basis: 100%;
+      margin-top: 30px;
+      background-color: #000;
+      border-color: #000;
+      font-weight: 700;
+    }
+    .btn.logout:hover {
+      background-color: #fff;
+      color: #c00;
+      border-color: #c00;
+      box-shadow: 0 8px 25px rgba(204, 0, 0, 0.5);
+      transform: translateY(-5px);
+      z-index: 2;
+    }
+
+    form.logout-form {
+      width: 100%;
+    }
+
+
+    .vendor-details p {
+  margin: 12px 0;
+  transition: color 0.3s ease;
+  overflow-wrap: break-word; /* allows wrapping */
+  word-break: break-word;    /* breaks long words */
+}
+
+  </style>
+</head>
+<body>
+
+<div class="profile-container">
+  <!-- Website Logo --> <a href="{% url 'vendor:vendor_home' %}" class="logo-wrapper">
+  <img src="{% static 'images/im1.png' %}" alt="Your Logo" class="logo" />
+</a>
+  <h1>Vendor Profile</h1>
+
+  <div class="vendor-details">
+    <p><strong>Name:</strong> {{ vendor.name }}</p>
+    <p><strong>Phone:</strong> {{ vendor.phone }}</p>
+    <p><strong>Email:</strong> {{ vendor.email }}</p>
+    <p><strong>Company Name:</strong> {{ vendor.company_name|default:"N/A" }}</p>
+    <p><strong>Address:</strong> {{ vendor.address|default:"N/A" }}</p>
+    <p><strong>Joined On:</strong> {{ vendor.join_date|date:"F j, Y, g:i a" }}</p>
+  </div>
+
+  <div class="buttons">
+    <a href="{% url 'vendor:edit_vendor' vendor.id %}" class="btn" style="margin-bottom: 25px;">Edit Profile</a>
+
+    <a href="{% url 'vendor:vendor' %}" class="btn">View Products</a>
+    <a href="" class="btn">View Orders</a>
+    <a href="" class="btn">View Reviews</a>
+
+    <form method="post" action="{% url 'vendor:vendor_logout' %}" class="logout-form" style="margin-top: 0;">
+      {% csrf_token %}
+      <button type="submit" class="btn logout">Logout</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
