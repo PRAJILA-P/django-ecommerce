@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">{{ category.name }}</h2>
+
+  {% if subcategories %}
+    <h4>Subcategories</h4>
+    <ul>
+      {% for sub in subcategories %}
+        <li><a href="{{ sub.get_url }}">{{ sub.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="row">
+    {% for product in products %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/no-image.png' %}" class="card-img-top" alt="No Image">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+            <p><strong>₹{{ product.price }}</strong></p>
+           
+            <a href="{{ product.get_url }}">{{ product.name }}</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No products available in this category.</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

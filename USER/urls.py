@@ -15,4 +15,6 @@ urlpatterns = [
     path('user_logout/',views.user_logout,name='user_logout'),
     path('user_edit_profile/<int:user_id>/',views.user_edit_profile,name='user_edit_profile'),
     path("category/<slug:category_slug>/", views.products_by_category, name="products_by_category"),
+    path("<slug:category_slug>/<slug:product_slug>/", views.prodCatdetail, name="prodCatdetail"),
+
 ]

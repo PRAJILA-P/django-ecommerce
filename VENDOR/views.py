@@ -247,8 +247,11 @@ def addproduct(request):
             stock = 0
 
         # Get Category object
-        category_id = request.POST.get("category")
-        category = get_object_or_404(Category, id=category_id)
+        # category_id = request.POST.get("category")
+        # category = get_object_or_404(Category, id=category_id)
+
+        subcategory_id = request.POST.get("subcategory")
+        category = get_object_or_404(Category, id=subcategory_id)
 
         # Get uploaded files
         image = request.FILES.get("image")
@@ -357,7 +360,7 @@ def vendor(request):
 # def product_view(request):
 #     return render(request,"product_view.html")
 
-def proDetail(request, c_slug, product_slug):
+def proDetail(request, c_slug, product_slug):  
     try:
         product = Product.objects.get(category__slug=c_slug, slug=product_slug)
     except Exception as e:
@@ -454,7 +457,8 @@ def product_search_vendor(request):
         ).filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
-            Q(category__name__icontains=query)
+            Q(category__name__icontains=query) 
+            
         )
     else:
         products = Product.objects.filter(vendor=vendor)  # ✅ only this vendor

@@ -5,6 +5,8 @@ from VENDOR.models import Product
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 from management_admin.models import Category
+
+from django.db.models import Q
 # Create your views here.
 
 # def index(request):
@@ -112,10 +114,63 @@ def index(request):
     products = paginator.get_page(page_number)
     return render(request, "home.html", {"categories": categories,"products": products})
 
+# def products_by_category(request, category_slug):
+#     category = get_object_or_404(Category, slug=category_slug)
+#     products = Product.objects.filter(category=category)
+#     return render(request, "products_by_category.html", {
+#         "category": category,
+#         "products": products
+#     })
+
+# def products_by_category(request, category_slug):
+#     category = get_object_or_404(Category, slug=category_slug)
+
+#     # Include products from this category + its direct subcategories
+#     subcategories = Category.objects.filter(parent=category)
+#     products = Product.objects.filter(category__in=[category] | list(subcategories))
+
+#     return render(request, "products_by_category.html", {
+#         "category": category,
+        
+#         "products": products
+#     })
+
+
 def products_by_category(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
-    products = Product.objects.filter(category=category)
-    return render(request, "products_by_category.html", {
+
+    # Category + its subcategories
+    categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
+    products = Product.objects.filter(category__in=categories)
+
+    return render(request, "category.html", {
         "category": category,
         "products": products
     })
+
+def prodCatdetail(request, category_slug, product_slug):
+    category = get_object_or_404(Category, slug=category_slug)
+    product = get_object_or_404(Product, category=category, slug=product_slug)
+
+    return render(request, "product_detail.html", {
+        "category": category,
+        "product": product,
+    })
+
+
+# def category_view(request, category_slug):
+#     # Get the main category (like jewellery)
+#     category = get_object_or_404(Category, slug=category_slug, parent=None)
+
+#     # Get all subcategories of this main category
+#     subcategories = category.subcategories.all()
+
+#     # Get all products that belong either to the main category or its subcategories
+#     products = Product.objects.filter(category__in=[category] + list(subcategories))
+
+#     context = {
+#         "category": category,
+#         "subcategories": subcategories,
+#         "products": products,
+#     }
+#     return render(request, "category.html", context)

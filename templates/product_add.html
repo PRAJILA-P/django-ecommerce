@@ -109,7 +109,7 @@
           <label for="stock">Stock Quantity</label>
           <input type="number" id="stock" name="stock" placeholder="Enter stock quantity">
         </div>
-        <div>
+        <!-- <div>
          <label for="category">Select Category</label>
 <select id="category" name="category" required>
   <option value="" selected disabled>Select Category</option>
@@ -119,8 +119,30 @@
 </select>
 
 
-        </div>
+        </div> -->
       </div>
+      <div class="form-grid">
+  <div>
+    <label for="main_category">Select Main Category</label>
+    <select id="main_category" name="main_category" required>
+      <option value="" selected disabled>Select Main Category</option>
+      {% for cat in categories %}
+        {% if not cat.parent %}   {# only top-level categories #}
+          <option value="{{ cat.id }}">{{ cat.name }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label for="subcategory">Select Subcategory</label>
+    <select id="subcategory" name="subcategory" required>
+      <option value="" selected disabled>Select Subcategory</option>
+      <!-- Subcategories will be dynamically loaded with JS -->
+    </select>
+  </div>
+</div>
+
 
       <label>Product Images</label>
       <div class="form-grid">
@@ -133,5 +155,34 @@
     </form>
   </div>
 
+  <script>
+  // All categories with their parent info (passed from Django)
+  const categories = [
+    {% for cat in categories %}
+      {id: {{ cat.id }}, name: "{{ cat.name }}", parent: {{ cat.parent.id|default:"null" }}},
+    {% endfor %}
+  ];
+
+  const mainCategorySelect = document.getElementById("main_category");
+  const subCategorySelect = document.getElementById("subcategory");
+
+  mainCategorySelect.addEventListener("change", function() {
+    const selectedMain = parseInt(this.value);
+    subCategorySelect.innerHTML = '<option value="" selected disabled>Select Subcategory</option>';
+
+    // Filter subcategories that belong to selected main category
+    const filtered = categories.filter(cat => cat.parent === selectedMain);
+    filtered.forEach(sub => {
+      const option = document.createElement("option");
+      option.value = sub.id;
+      option.textContent = sub.name;
+      subCategorySelect.appendChild(option);
+    });
+  });
+</script>
+
+
 </body>
+
+
 </html>
