@@ -1,6 +1,11 @@
 {% load static %}
 
 <style>
+  .nav-link i {
+  vertical-align: middle;
+  font-size: 18px;  /* match size to text */
+}
+
   .search-input {
     min-width: 300px;
     width: 100%;
@@ -46,7 +51,7 @@
            
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{% url 'user:user_profile' %}">Profile</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="{% url 'user:order_list' %}">my orders</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'user:user_logout' %}">logout</a></li>
             </ul>
@@ -71,16 +76,19 @@
           </li>
           {% endif %}
 
-
+         
            
 
            
-          <!-- <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'user:user_register' %}">register</a>
-          </li>
           <li class="nav-item">
+  <a class="nav-link" href="{% url 'user:view_cart' %}">
+    <i class="fa-solid fa-cart-shopping"></i>
+  </a>
+</li>
+
+          <!-- <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'user:user_login' %}">login</a>
-          </li> -->
+          </li>  -->
           <!-- <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'user:user_profile' %}">profile</a>
           </li> -->

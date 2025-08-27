@@ -1,0 +1,80 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="container my-5">
+
+  <h2 class="mb-4 text-center">My Orders</h2>
+
+  {% for order in orders %}
+  <div class="card mb-5 border-dark" style="background-color: #fff; border: 1px solid #000;">
+    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #000;">
+      <h4>Order</h4>
+      <!-- <h4>Order #{{ order.id }}</h4> -->
+      <small>Placed on: {{ order.created_at|date:"d M, Y H:i" }}</small>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <p><strong>Status:</strong> {{ order.status }}</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p><strong>Total Amount:</strong> ₹{{ order.total_amount|floatformat:2 }}</p>
+        </div>
+      </div>
+
+      <p><strong>Shipping Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.state }}, {{ order.postal_code }}, {{ order.country }}</p>
+
+      <div class="table-responsive">
+        <table class="table table-bordered" style="border: 1px solid #000;">
+          <thead style="background-color: #f1f1f1; border-bottom: 1px solid #000;">
+            <tr>
+              <th style="border: 1px solid #000;">Product</th>
+              <th style="border: 1px solid #000;">Quantity</th>
+              <th style="border: 1px solid #000;">Price</th>
+              <th style="border: 1px solid #000;">Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in order.items.all %}
+            <tr>
+              <!-- <td style="border: 1px solid #000;">{{ item.product.name }}</td> -->
+            <td style="border: 1px solid #000;">
+  <a href="{% url 'user:prodCatdetail' item.product.category.slug item.product.slug %}" 
+     style="color: black; text-decoration: none;">
+     {{ item.product.name }}
+  </a>
+</td>
+
+
+              <td style="border: 1px solid #000;">{{ item.quantity }}</td>
+              <!-- <td style="border: 1px solid #000;">₹{{ item.final_price|floatformat:2 }}</td> -->
+               <td>
+  {% if item.product.final_price %}
+    ₹{{ item.product.final_price }}
+  {% else %}
+    ₹{{ item.product.price }}
+  {% endif %}
+</td>
+
+              <!-- <td style="border: 1px solid #000;">₹{{ item.subtotal|floatformat:2 }}</td> -->
+              <td>₹{{ item.subtotal|floatformat:2 }}</td>
+
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end mt-3">
+        <a href="{% url 'user:order_detail' order.id %}" class="btn btn-sm" style="border: 1px solid #000; color: #000; background-color: #fff;">View Details</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="text-center" style="border: 1px solid #000; padding: 20px;">
+    You have no orders yet.
+  </div>
+  {% endfor %}
+
+</div>
+{% endblock %}

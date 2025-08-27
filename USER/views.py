@@ -7,6 +7,14 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from management_admin.models import Category
 
 from django.db.models import Q
+
+from . models import Cart
+
+
+from .models import Order, OrderItem
+from .forms import CheckoutForm
+
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # def index(request):
@@ -141,21 +149,31 @@ def products_by_category(request, category_slug):
 
     # Category + its subcategories
     categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
-    products = Product.objects.filter(category__in=categories)
+    product_list = Product.objects.filter(category__in=categories)
+    
+    paginator = Paginator(product_list, 8)
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
 
     return render(request, "category.html", {
         "category": category,
         "products": products
     })
 
-def prodCatdetail(request, category_slug, product_slug):
-    category = get_object_or_404(Category, slug=category_slug)
-    product = get_object_or_404(Product, category=category, slug=product_slug)
 
-    return render(request, "product_detail.html", {
-        "category": category,
-        "product": product,
-    })
+def prodCatdetail(request, category_slug, product_slug):
+    product = get_object_or_404(Product, slug=product_slug, category__slug=category_slug)
+    return render(request, "product.html", {"product": product})
+
+
+# def prodCatdetail(request, category_slug, product_slug):
+#     category = get_object_or_404(Category, slug=category_slug)
+#     product = get_object_or_404(Product, category=category, slug=product_slug)
+
+#     return render(request, "product_detail.html", {
+#         "category": category,
+#         "product": product,
+#     })
 
 
 # def category_view(request, category_slug):
@@ -174,3 +192,190 @@ def prodCatdetail(request, category_slug, product_slug):
 #         "products": products,
 #     }
 #     return render(request, "category.html", context)
+
+
+def add_to_cart(request, product_id):
+    register_id = request.session.get("user_id")
+    if not register_id:
+        messages.error(request, "You must be logged in to add items to cart.")
+        return redirect("user:user_login")  # change to your login url name
+
+    user = get_object_or_404(Register, id=register_id)
+    product = get_object_or_404(Product, id=product_id)
+
+    cart_item, created = Cart.objects.get_or_create(user=user, product=product)
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    return redirect("user:view_cart")
+
+
+def view_cart(request):
+    register_id = request.session.get("user_id")
+    if not register_id:
+        messages.error(request, "You must be logged in to view cart.")
+        return redirect("user:user_login")
+
+    user = get_object_or_404(Register, id=register_id)
+    cart_items = Cart.objects.filter(user=user)
+    total = sum(item.total_price() for item in cart_items)
+
+    return render(request, "cart.html", {"cart_items": cart_items, "total": total})
+
+
+def remove_from_cart(request, cart_id):
+    user_id = request.session.get("user_id")
+    cart_item = get_object_or_404(Cart, id=cart_id, user_id=user_id)
+    cart_item.delete()
+    return redirect("user:view_cart")
+
+
+
+def update_quantity(request, cart_id, action):
+    user_id = request.session.get("user_id")   # adjust key as per your login system
+    cart_item = get_object_or_404(Cart, id=cart_id, user_id=user_id)
+
+    if action == "increase":
+        cart_item.quantity += 1
+    elif action == "decrease" and cart_item.quantity > 1:
+        cart_item.quantity -= 1
+
+    cart_item.save()
+    return redirect("user:view_cart")
+
+
+# def checkout(request):
+#     """Convert cart items into an order"""
+#     user_id = request.session.get("user_id")   # assuming you store user in session
+#     if not user_id:
+#         messages.error(request, "Please login first")
+#         return redirect("user:user_login")
+
+#     user = get_object_or_404(Register, id=user_id)
+#     cart_items = Cart.objects.filter(user=user)
+
+#     if not cart_items:
+#         messages.error(request, "Your cart is empty")
+#         return redirect("user:view_cart")
+
+#     if request.method == "POST":
+#         address = request.POST.get("address")
+#         city = request.POST.get("city")
+#         state = request.POST.get("state")
+#         postal_code = request.POST.get("postal_code")
+
+#         # 1. Create the Order
+#         order = Order.objects.create(
+#             user=user,
+#             address=address,
+#             city=city,
+#             state=state,
+#             postal_code=postal_code,
+#         )
+
+#         # 2. Move Cart items → OrderItem
+#         for item in cart_items:
+#             OrderItem.objects.create(
+#                 order=order,
+#                 product=item.product,
+#                 quantity=item.quantity,
+#                 price=item.product.price
+#             )
+
+#         # 3. Clear the cart
+#         cart_items.delete()
+
+#         messages.success(request, f"Order {order.id} placed successfully!")
+#         return redirect("user:order_detail", order_id=order.id)
+
+#     return render(request, "checkout.html", {"cart_items": cart_items})
+
+def checkout(request):
+    # ✅ Fetch logged-in custom user from session
+    user_id = request.session.get("user_id")  # or "user_email" if you stored email
+    if not user_id:
+        return redirect("user:user_login")  # not logged in
+
+    user = get_object_or_404(Register, id=user_id)
+
+    cart_items = Cart.objects.filter(user=user)
+
+
+    if not cart_items.exists():
+        # messages.error(request,"your cart is empty")
+        return redirect("user:view_cart")  # or show a message
+
+
+
+    if request.method == "POST":
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            # ✅ Create order for this Register user
+            order = Order.objects.create(
+                user=user,
+                address=form.cleaned_data['address'],
+                city=form.cleaned_data['city'],
+                state=form.cleaned_data['state'],
+                postal_code=form.cleaned_data['postal_code'],
+                country=form.cleaned_data['country'],
+            )
+
+            # ✅ Move cart items into order items
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price,  # keep purchase price
+                )
+
+            # ✅ Clear cart
+            cart_items.delete()
+
+            return redirect("user:order_detail", order_id=order.id)
+    else:
+        form = CheckoutForm()
+
+    return render(request, "checkout.html", {"form": form, "cart_items": cart_items})
+# def order_list(request):
+#     """Show all orders of logged-in user"""
+#     user_id = request.session.get("user_id")
+#     user = get_object_or_404(Register, id=user_id)
+#     orders = Order.objects.filter(user=user).order_by("-created_at")
+#     return render(request, "orders.html", {"orders": orders})
+
+# def order_list(request,order_id):
+#     user_id = request.session.get("user_id")
+#     if not user_id:
+#         return redirect("user:user_login")
+
+#     order = get_object_or_404(Order, id=order_id, user_id=user_id)
+#     return render(request, "user_order.html", {"order": order})
+
+
+# @login_required
+def order_list(request):
+    # 1️⃣ Get user id from session
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("user:user_login")
+
+    # 2️⃣ Fetch Register instance
+    user = get_object_or_404(Register, id=user_id)
+
+    # 3️⃣ Filter orders
+    orders = Order.objects.filter(user=user).order_by("-created_at")
+
+    # 4️⃣ Calculate subtotal for items
+    # for order in orders:
+    #     for item in order.items.all():
+    #         item.subtotal = item.price * item.quantity
+
+    return render(request, "user_order.html", {"orders": orders})
+
+def order_detail(request, order_id):
+    """Show single order details"""
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, "order.html", {"order": order})

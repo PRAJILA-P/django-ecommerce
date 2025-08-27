@@ -1,0 +1,106 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .cart-actions a {
+  color: black; 
+  transition: color 0.3s;
+}
+.cart-actions a:hover {
+  color: #007bff; /* turns blue on hover */
+}
+.cart-actions a:last-child:hover {
+  color: darkred; /* delete turns darker red */
+}
+
+</style>
+<div class="cart-container" style="display: flex; justify-content: space-between; margin: 20px;">
+  
+  <!-- Left: Cart Items -->
+  <div class="cart-items" style="width: 65%;">
+    <h2 style="text-align: center; margin-bottom: 20px;">Your Items</h2>
+
+    {% for item in cart_items %}
+<div class="cart-item" style="display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+  
+  <!-- Product Image -->
+  <div class="cart-image" style="width: 150px; margin-right: 20px;">
+    <a href="{% url 'user:prodCatdetail' category_slug=item.product.category.slug product_slug=item.product.slug %}">
+      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; border-radius: 8px;">
+    </a>
+  </div>
+  
+  <!-- Product Details -->
+  <div class="cart-details" style="flex: 1; font-family: Arial, sans-serif;">
+    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #333;">
+      {{ item.product.name }}
+    </h3>
+
+    {% if item.product.discount > 0 %}
+      <p style="margin: 5px 0; font-size: 14px; color: #888;">
+        <del> ₹{{ item.product.price }}</del>
+      </p>
+      <p style="margin: 3px 0; font-size: 14px; color: #d32f2f; font-weight: bold;">
+        {{ item.product.discount }}% OFF
+      </p>
+      <p style="margin: 3px 0; font-size: 16px; font-weight: bold; color: #2e7d32;">
+         ₹{{ item.product.final_price }}
+      </p>
+    {% else %}
+      <p style="margin: 5px 0; font-size: 16px; font-weight: bold; color: #333;">
+         ₹{{ item.product.price }}
+      </p>
+      <p style="margin: 3px 0; font-size: 13px; color: #999;">
+        No Discount
+      </p>
+    {% endif %}
+
+    <p style="margin: 8px 0; font-size: 15px; color: #444;">
+      Qty: <span style="font-weight: bold;">{{ item.quantity }}</span> × 
+       ₹{{ item.product.final_price }} = 
+      <strong style="color: #000;"> ₹{{ item.total_price }}</strong>
+    </p>
+  </div>
+
+  <!-- Quantity Controls -->
+  <div class="cart-actions" style="display: flex; align-items: center; gap: 15px;">
+    <a href="{% url 'user:update_quantity' item.id 'increase' %}" style="font-size: 22px; text-decoration: none; color: black;">
+       <i class="fa-solid fa-plus"></i>
+    </a>
+    <a href="{% url 'user:update_quantity' item.id 'decrease' %}" style="font-size: 22px; text-decoration: none; color: black;">
+       <i class="fa-solid fa-minus"></i>
+    </a>
+    <a href="{% url 'user:remove_from_cart' item.id %}" style="font-size: 22px; text-decoration: none; color: black;">
+       <i class="fa-solid fa-trash"></i>
+    </a>
+  </div>
+
+</div>
+{% empty %}
+<p>Your cart is empty.</p>
+{% endfor %}
+
+{% if messages %}
+  {% for message in messages %}
+    <p style="color:red;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+  </div>
+
+  <!-- Right: Cart Summary -->
+  <div class="cart-summary" style="width: 30%; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+    <h2 style="text-align: center;">Checkout</h2>
+    <p style="margin: 15px 0;">Please review your shopping cart items before proceeding with the order payment.</p>
+    <h3 style="text-align: center;">Your Total is: <strong> ₹{{ total }}</strong></h3>
+
+    <div style="text-align: center; margin-top: 20px; ">
+      <a href="/" style="display: block;padding: 10px 20px; background: gray; color: white; border-radius: 5px; text-decoration: none; margin-right: 10px; margin-bottom: 10px;">Continue Shopping</a>
+      <a href="{% url 'user:checkout' %}" style="display: block;padding: 10px 20px; background: black; color: white; border-radius: 5px; text-decoration: none;">Place Order</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

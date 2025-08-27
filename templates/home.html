@@ -2,81 +2,76 @@
 {% load static %}
 
 {% block content %}
+
 <div class="container-fluid mt-4">
   <h2 class="mb-4">Available Products</h2>
   <div class="row g-4">
     {% for product in products %}
       <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm border-0" style="height: 500px;">
-          {% if product.image %}
-            <img src="{{ product.image.url }}" class="card-img-top rounded" alt="{{ product.name }}" style="height: 300px;">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text text-muted" style="min-height: 60px;">
-              {{ product.description|truncatewords:12 }}
-            </p>
+        <a href="{% url 'user:prodCatdetail' category_slug=product.category.slug product_slug=product.slug %}" class="text-decoration-none text-dark">
+          <div class="card shadow-sm border-0" style="height: 500px;">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" class="card-img-top rounded" alt="{{ product.name }}" style="height: 300px;">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text text-muted" style="min-height: 60px;">
+                {{ product.description|truncatewords:12 }}
+              </p>
 
-            <!-- Old Price -->
-            {% if product.discount > 0 %}
-                            <p class="text-muted mb-1">
-                                <del>₹{{ product.price }}</del>
-                                <span class="badge bg-danger">{{ product.discount }}% OFF</span>
-                            </p>
-                            <p class="fw-bold text-success">₹{{ product.final_price|floatformat:2 }}</p>
-                        {% else %}
-                            <p class="fw-bold">₹{{ product.price }}</p>
-                        {% endif %}
-
-            <!-- New Price -->
-            <!-- <p class="fw-bold text-success fs-5">₹{{ product.price }}</p> -->
+              <!-- Price Section -->
+              {% if product.discount > 0 %}
+                <p class="text-muted mb-1">
+                  <del>₹{{ product.price }}</del>
+                  <span class="badge bg-danger">{{ product.discount }}% OFF</span>
+                </p>
+                <p class="fw-bold text-success">₹{{ product.final_price|floatformat:2 }}</p>
+              {% else %}
+                <p class="fw-bold">₹{{ product.price }}</p>
+              {% endif %}
+            </div>
           </div>
-        </div>
+        </a>
       </div>
     {% empty %}
       <p>No products available.</p>
     {% endfor %}
   </div>
-   <div class="mt-4">
+
+  <!-- Pagination -->
+  <div class="mt-4">
     <nav>
-        <ul class="pagination justify-content-center">
-            <!-- Previous Button -->
-            {% if products.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ products.previous_page_number }}" style="color: black;">Previous</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">Previous</span>
-                </li>
-            {% endif %}
+      <ul class="pagination justify-content-center">
+        {% if products.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ products.previous_page_number }}" style="color: black;">Previous</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
 
-            <!-- Page Numbers -->
-            {% for num in products.paginator.page_range %}
-                {% if products.number == num %}
-                    <li class="page-item active">
-                        <a class="page-link" style="background-color: black; border-color: black;">{{ num }}</a>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" style="color: black;" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
+        {% for num in products.paginator.page_range %}
+          {% if products.number == num %}
+            <li class="page-item active">
+              <a class="page-link" style="background-color: black; border-color: black;">{{ num }}</a>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" style="color: black;" href="?page={{ num }}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
 
-            <!-- Next Button -->
-            {% if products.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ products.next_page_number }}" style="color: black;">Next</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">Next</span>
-                </li>
-            {% endif %}
-        </ul>
+        {% if products.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ products.next_page_number }}" style="color: black;">Next</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
     </nav>
+  </div>
 </div>
 
-</div>
 {% endblock %}

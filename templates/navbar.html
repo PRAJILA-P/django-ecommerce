@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #000000;">
   <div class="container-fluid justify-content-center">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCategories" aria-controls="navbarCategories" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,16 +9,25 @@
     <div class="collapse navbar-collapse justify-content-center" id="navbarCategories">
       <ul class="navbar-nav text-center">
         {% for category in categories %}
-          {% if not category.parent %}  {# show only top-level #}
-            <li class="nav-item dropdown mx-3">
-              <a class="nav-link dropdown-toggle text-white fw-bold text-uppercase" 
-                 href="{% url 'user:products_by_category' category.slug %}" 
+          {% if not category.parent %}
+            <li class="nav-item dropdown mx-3 d-flex align-items-center">
+              
+              <!-- main category link -->
+              <a class="nav-link text-white fw-bold text-uppercase" 
+                 href="{% url 'user:products_by_category' category.slug %}">
+                {{ category.name }}
+              </a>
+
+              <!-- dropdown arrow -->
+              {% if category.subcategories.all %}
+              <a class="nav-link dropdown-toggle text-white p-0 ms-1" 
+                 href="#" 
                  id="navbarDropdown{{ category.id }}" 
                  role="button" 
                  data-bs-toggle="dropdown" 
                  aria-expanded="false">
-                {{ category.name }}
               </a>
+
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{ category.id }}">
                 {% for subcat in category.subcategories.all %}
                   <li>
@@ -29,6 +37,7 @@
                   </li>
                 {% endfor %}
               </ul>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
@@ -38,5 +47,3 @@
 </nav>
 
 
-
-<h1>hii</h1>
