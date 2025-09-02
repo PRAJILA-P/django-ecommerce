@@ -1,0 +1,137 @@
+{% extends 'custom_admin_base.html' %}
+{% load static %}
+
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+    <div style="
+        margin: 15px auto;
+        width: fit-content;
+        padding: 10px 20px;
+        text-align: center;
+        border: 2px solid {% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}black{% endif %};
+        border-radius: 8px;
+        color: {% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}black{% endif %};
+        font-weight: bold;
+    ">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+<div class="dashboard-container">
+    <h2 class="page-title">Product Dashboard</h2>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <!-- Product Image -->
+            <a href="">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+            </a>
+
+            <!-- Product Name -->
+            <h3 class="product-name">{{ product.name }}</h3>
+
+            <!-- Link to edit/detail page -->
+            <a href="{% url 'ad_min:custom_admin_product' product.id %}" class="view-link">View / Edit</a>
+        </div>
+        {% empty %}
+        <p>No products found.</p>
+        {% endfor %}
+    </div>
+
+    <div class="mt-4">
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if products.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ products.previous_page_number }}" style="color: black;">Previous</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+      {% endif %}
+
+      {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+          <li class="page-item active">
+            <a class="page-link" style="background-color: black; border-color: black;">{{ num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" style="color: black;" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if products.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ products.next_page_number }}" style="color: black;">Next</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+</div>
+
+<style>
+    .dashboard-container {
+        padding: 30px;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 25px;
+        font-weight: bold;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 15px;
+        text-align: center;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-image {
+        width: 100%;
+        max-height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .product-name {
+        font-size: 16px;
+        margin: 12px 0;
+        font-weight: 600;
+    }
+
+    .view-link {
+        display: inline-block;
+        padding: 6px 12px;
+        font-size: 14px;
+        color: #fff;
+        background: #333;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background 0.2s ease;
+    }
+
+    .view-link:hover {
+        background: #000;
+    }
+</style>
+{% endblock %}

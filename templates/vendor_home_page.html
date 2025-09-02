@@ -221,6 +221,44 @@
     transform: scaleX(1);
     transform-origin: left;
   }
+
+  footer {
+    background-color: #212121;
+    color: #fff;
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+  footer a {
+    color: #fff;
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
+  .footer-heading {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #b0b0b0;
+  }
+  .footer-bottom {
+    border-top: 1px solid #444;
+    margin-top: 30px;
+    padding-top: 20px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .footer-icons a {
+    font-size: 18px;
+    margin-right: 15px;
+    color: #fff;
+  }
+  .footer-icons a:hover {
+    color: #fdd835;
+  }
+  .footer-payment img {
+    height: 25px;
+    margin-right: 10px;
+  }
     </style>
 </head>
 <body>
@@ -403,6 +441,92 @@
     <button class="nav-btn" id="next">&#10095;</button>
     <div class="dots"></div>
 </div>
+
+
+<footer>
+  <div class="container">
+    <div class="row">
+
+      <!-- About -->
+      <div class="col-md-2">
+        <h6 class="footer-heading">ABOUT</h6>
+        <p><a href="#">Contact Us</a></p>
+        <p><a href="#">About Luxora</a></p>
+        <p><a href="#">Careers</a></p>
+        <p><a href="#">Press</a></p>
+        <p><a href="#">Corporate Information</a></p>
+      </div>
+
+      <!-- Collections -->
+      <div class="col-md-2">
+        <h6 class="footer-heading">COLLECTIONS</h6>
+        <p><a href="#">Rings</a></p>
+        <p><a href="#">Necklaces</a></p>
+        <p><a href="#">Earrings</a></p>
+        <p><a href="#">Bracelets</a></p>
+        <p><a href="#">Wedding Jewelry</a></p>
+      </div>
+
+      <!-- Help -->
+      <div class="col-md-2">
+        <h6 class="footer-heading">HELP</h6>
+        <p><a href="#">Payments</a></p>
+        <p><a href="#">Shipping</a></p>
+        <p><a href="#">Cancellation & Returns</a></p>
+        <p><a href="#">FAQ</a></p>
+      </div>
+
+      <!-- Policy -->
+      <div class="col-md-3">
+        <h6 class="footer-heading">POLICIES</h6>
+        <p><a href="#">Return Policy</a></p>
+        <p><a href="#">Terms Of Use</a></p>
+        <p><a href="#">Privacy</a></p>
+        <p><a href="#">Jewelry Care</a></p>
+        <p><a href="#">Sitemap</a></p>
+      </div>
+
+      <!-- Address -->
+      <div class="col-md-3">
+        <h6 class="footer-heading">Contact Us:</h6>
+        <p>
+          Luxora Jewelry Pvt. Ltd,<br>
+          Pearl Tower, MG Road,<br>
+          Bengaluru, 560001, Karnataka, India
+        </p>
+        <h6 class="footer-heading">Customer Care:</h6>
+        <p>
+          Phone: <a href="tel:+919876543210">+91-9876543210</a><br>
+          Email: <a href="mailto:support@luxora.com">support@luxora.com</a>
+        </p>
+        <div class="footer-icons">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-youtube"></i></a>
+          <a href="#"><i class="bi bi-twitter-x"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        <a href="#">Become a Seller</a> | 
+        <a href="#">Advertise</a> | 
+        <a href="#">Gift Cards</a> | 
+        <a href="#">Help Center</a>
+      </div>
+      <div>© 2010-2025 Luxora.com</div>
+       <div class="footer-payment">
+          <img src="https://img.icons8.com/color/48/visa.png" alt="Visa">
+          <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard">
+          <img src="https://img.icons8.com/color/48/rupay.png" alt="RuPay">
+          <img src="https://img.icons8.com/color/48/amex.png" alt="Amex">
+        </div>
+    </div>
+  </div>
+</footer>
+
 
 <script>
     const slides = document.querySelector('.slides');

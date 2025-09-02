@@ -12,6 +12,7 @@ from django.contrib.auth.hashers import make_password
 
 
 
+
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 
@@ -24,10 +25,26 @@ from .models import VendorRegister
 
 from django.db.models import Q
 
+
+from USER.models import OrderItem
+
+from USER.models import Order
+
+from USER.models import Review
 # Create your views here.
 
-# def index(request):
-#     return render(request,'index.html')
+def index(request):
+    vendor_email = request.session.get('vendor_email')
+    vendor = None
+    if vendor_email:
+        try:
+            vendor = VendorRegister.objects.get(email=vendor_email)
+        except VendorRegister.DoesNotExist:
+            vendor = None
+
+    return render(request, "base.html", {
+        "vendor": vendor,
+    })
 
 def vendor_home(request):
     return render(request,'vendor_home_page.html')
@@ -86,7 +103,7 @@ def vendor_login(request):
         try:
             vendor = VendorRegister.objects.get(email=email)
         except VendorRegister.DoesNotExist:
-            messages.error(request, "Invalid email or password.")
+            messages.error(request, "Invalid email ")
             return render(request, 'vendor_login.html')
 
         if check_password(password, vendor.password):
@@ -101,7 +118,7 @@ def vendor_login(request):
             # messages.success(request, "Login successful!")
             return redirect('vendor:vendor_home')  
         else:
-            messages.error(request, "Invalid email or password.")
+            messages.error(request, "Invalid password.")
             return render(request, 'vendor_login.html')
 
     return render(request, 'vendor_login.html')
@@ -302,7 +319,7 @@ def forgot_password(request):
             send_mail(
                 "Reset Your Password",
                 f"Click this link to reset your password: {reset_link}",
-                "your_email@example.com",
+                "prajilap01@gmail.com",
                 [email],
                 fail_silently=False,
             )
@@ -331,7 +348,7 @@ def reset_password(request, token):
             messages.error(request, "Passwords do not match.")
             return redirect(request.path)
 
-        from django.contrib.auth.hashers import make_password
+        
         vendor.password = make_password(password)
         vendor.reset_token = None  # clear token after reset
         vendor.save()
@@ -353,20 +370,24 @@ def vendor(request):
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
-    return render(request,'vendor_page.html', {'products': products})
+    return render(request,'vendor_page.html', {'products': products,'vendor': vendor})
 
 
 
 # def product_view(request):
 #     return render(request,"product_view.html")
 
-def proDetail(request, c_slug, product_slug):  
-    try:
-        product = Product.objects.get(category__slug=c_slug, slug=product_slug)
-    except Exception as e:
-        raise e
-    return render(request, 'product_view.html', {'product': product})
+# def proDetail(request, c_slug, product_slug):  
+#     try:
+#         product = Product.objects.get(category__slug=c_slug, slug=product_slug)
+#     except Exception as e:
+#         raise e
+#     return render(request, 'product_view.html', {'product': product})
 
+
+def proDetail(request, c_slug, product_slug):
+    product = get_object_or_404(Product, category__slug=c_slug, slug=product_slug)
+    return render(request, 'product_view.html', {'product': product})
 
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -471,4 +492,75 @@ def product_search_vendor(request):
     return render(request, "vendor_page.html", {
         "products": products_page,
         "query": query,
+    })
+
+
+def vendor_orders(request, vendor_id):
+    vendor = get_object_or_404(VendorRegister, id=vendor_id)
+
+    # Get only order items for this vendor's products
+    order_items = OrderItem.objects.filter(product__vendor=vendor).select_related('order', 'product', 'order__user')
+
+    # Optional: group order items by order id for display
+    orders_dict = {}
+    for item in order_items:
+        if item.order.id not in orders_dict:
+            orders_dict[item.order.id] = {
+                'order': item.order,
+                'items': []
+            }
+        orders_dict[item.order.id]['items'].append(item)
+
+    context = {
+        'vendor': vendor,
+        'orders_dict': orders_dict,
+    }
+    return render(request, 'vendor_orders.html', context)
+
+
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        if order.status != "Cancelled" and order.status != "Delivered":
+            order.status = "Cancelled"
+            order.save()
+            messages.success(request, f"Order #{order.id} has been cancelled.")
+        else:
+            messages.info(request, "This order cannot be cancelled.")
+
+    # Get vendor from first item in order
+    first_item = order.items.first()  # adjust 'items' if your related_name is different
+    vendor_id = first_item.product.vendor.id
+
+    return redirect('vendor:vendor_orders', vendor_id)
+
+
+
+def vendor_reviews(request):
+    vendor_email = request.session.get('vendor_email')  # Example: you saved vendor email in session
+    vendor = VendorRegister.objects.get(email=vendor_email)
+
+    # fetch only products of this vendor
+    product_list = Product.objects.filter(vendor=vendor)
+    paginator = Paginator(product_list, 10)  
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
+    return render(request,'vendor_reviews.html', {'products': products,'vendor': vendor})
+
+def vendor_review_detail(request, product_id):
+    vendor_email = request.session.get('vendor_email')
+    vendor = VendorRegister.objects.get(email=vendor_email)
+
+    # fetch product (only if it belongs to this vendor)
+    product = get_object_or_404(Product, id=product_id, vendor=vendor)
+
+    # fetch product reviews
+    reviews = Review.objects.filter(product=product)
+
+    return render(request, 'vendor_review_detail.html', {
+        'product': product,
+        'reviews': reviews,
+        'vendor': vendor
     })

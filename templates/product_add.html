@@ -150,8 +150,13 @@
         <input type="file" id="image2" name="image2" accept="image/*">
       </div>
       <input type="file" id="image3" name="image3" accept="image/*">
-
+      {% if messages %}
+  {% for message in messages %}
+    <p style="color:red;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
       <button type="submit">Add Product</button>
+      
     </form>
   </div>
 

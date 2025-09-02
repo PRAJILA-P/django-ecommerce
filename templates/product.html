@@ -68,6 +68,23 @@
 </div>
 
 </div>
+<h3 class="mt-4">Customer Reviews</h3>
+
+{% if reviews %}
+  {% for review in reviews %}
+    <div class="border p-3 mb-3 rounded">
+      <strong>{{ review.user.name }}</strong> 
+      <span class="text-muted">- {{ review.created_at|date:"M d, Y" }}</span>
+      <br>
+      ⭐ {{ review.rating }}/5
+      <p>{{ review.comment }}</p>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No reviews yet. Be the first to review this product!</p>
+{% endif %}
+
+
 </div>
 
 <!-- Script to change main image -->

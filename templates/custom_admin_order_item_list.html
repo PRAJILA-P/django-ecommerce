@@ -1,0 +1,39 @@
+{% extends "custom_admin_base.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+    .product-link {
+        color: black !important;   /* Makes the text black */
+        text-decoration: none !important; /* Removes underline */
+    }
+
+    .product-link:hover {
+        color: #555;  /* Optional: add hover effect */
+    }
+</style>
+
+
+
+ {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="text-align: center;">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Order Items</h2>
+
+    <ul class="list-group shadow">
+        {% for item in orderitems %}
+        <li class="list-group-item">
+            <a href="{% url 'ad_min:custom_admin_order_item_detail' item.id %}" class="product-link">
+                {{ item.product.name }}× {{ item.quantity }}
+            </a>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">No order items found.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "custom_admin_base.html" %}
+{% block content %}
+
+{% load static %}
+
+<style>
+    .product-link {
+        color: black !important;   /* Makes the text black */
+        text-decoration: none !important; /* Removes underline */
+    }
+
+    .product-link:hover {
+        color: #555;  /* Optional: add hover effect */
+    }
+</style>
+
+{% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="text-align: center;">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+<div class="container mt-5">
+    <h2 class="mb-4">Review List</h2>
+
+    <ul class="list-group shadow">
+        {% for review in reviews %}
+        <li class="list-group-item"><a href="{% url 'ad_min:custom_admin_review_detail' review.id %}" class="product-link">
+             {{ review.user.name }}  -{{ review.product.name }}
+            
+             </a>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">No reviews found.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

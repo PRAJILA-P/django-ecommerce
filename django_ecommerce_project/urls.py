@@ -25,7 +25,7 @@ from VENDOR import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'vendor/',include('VENDOR.urls')),
-    re_path(r'manage/',include('management_admin.urls')),
+    re_path(r'custom_admin/',include('management_admin.urls')),
     path("reset-password/<str:token>/",views.reset_password, name="reset_password"),
     re_path(r'',include('USER.urls')),
 ]

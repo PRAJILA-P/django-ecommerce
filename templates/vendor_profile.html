@@ -215,8 +215,8 @@
     <a href="{% url 'vendor:edit_vendor' vendor.id %}" class="btn" style="margin-bottom: 25px;">Edit Profile</a>
 
     <a href="{% url 'vendor:vendor' %}" class="btn">View Products</a>
-    <a href="" class="btn">View Orders</a>
-    <a href="" class="btn">View Reviews</a>
+    <a href="{% url 'vendor:vendor_orders' vendor.id %}" class="btn">View Orders</a>
+    <a href="{% url 'vendor:vendor_reviews' %}" class="btn">View Reviews</a>
 
     <form method="post" action="{% url 'vendor:vendor_logout' %}" class="logout-form" style="margin-top: 0;">
       {% csrf_token %}

@@ -1,0 +1,53 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 600px;">
+    <h3 class="mb-4 text-center">Write a Review</h3>
+    <form method="post" class="p-4 border rounded shadow-sm bg-white">
+        {% csrf_token %}
+
+        <!-- ⭐ Star Rating -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Rate the product</label>
+            <div class="star-rating">
+                <input type="radio" name="rating" value="5" id="5"><label for="5">★</label>
+                <input type="radio" name="rating" value="4" id="4"><label for="4">★</label>
+                <input type="radio" name="rating" value="3" id="3"><label for="3">★</label>
+                <input type="radio" name="rating" value="2" id="2"><label for="2">★</label>
+                <input type="radio" name="rating" value="1" id="1"><label for="1">★</label>
+            </div>
+        </div>
+
+        <!-- 💬 Comment -->
+        <div class="mb-3">
+            <label for="id_comment" class="form-label fw-bold">Your Review</label>
+            {{ form.comment }}
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Submit Review</button>
+    </form>
+</div>
+
+<style>
+/* ⭐ Star Rating CSS */
+.star-rating {
+  direction: rtl;
+  display: inline-flex;
+  font-size: 2rem;
+}
+.star-rating input {
+  display: none;
+}
+.star-rating label {
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: gold;
+}
+</style>
+{% endblock %}

@@ -74,14 +74,14 @@ class Product(models.Model):
         return self.name
     
     def save(self, *args, **kwargs):
-        if not self.slug:  # generate slug only if not provided
-            base_slug = slugify(self.name)
-            slug = base_slug
-            counter = 1
-            while Product.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = slug
+        base_slug = slugify(self.name)
+        slug = base_slug
+        counter = 1
+    # ensure unique slug (avoid conflicts with other products)
+        while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        self.slug = slug
 
     # ensure stock is never None
         if self.stock is None:

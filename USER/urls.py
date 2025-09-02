@@ -20,6 +20,8 @@ urlpatterns = [
     # path("orders/<int:order_id>/", views.order_list, name="order_list"),
     path("orders/<int:order_id>/",views.order_detail, name="order_detail"),
 
+    path("cancel-order/<int:order_id>/", views.cancel_order, name="cancel_order"),
+
 
     path("category/<slug:category_slug>/", views.products_by_category, name="products_by_category"),
     path("<slug:category_slug>/<slug:product_slug>/", views.prodCatdetail, name="prodCatdetail"),
@@ -30,7 +32,14 @@ urlpatterns = [
     path("cart/remove/<int:cart_id>/", views.remove_from_cart, name="remove_from_cart"),
     path("cart/update/<int:cart_id>/<str:action>/", views.update_quantity, name="update_quantity"),
      
+    path('product/<int:product_id>/review/', views.add_review, name='add_review'),
+
+
+    path("search/", views.product_search, name="product_search"),
+
     
+    # path("cancel-order/<int:order_id>/", views.cancel_order, name="cancel_order"),
+
     # path("orders/<int:order_id>/", views.order_detail, name="order_detail"),
 
 

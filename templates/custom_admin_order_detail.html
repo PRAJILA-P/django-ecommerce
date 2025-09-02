@@ -1,0 +1,66 @@
+{% extends "custom_admin_base.html" %}
+{% block content %}
+{% load static %}
+<div class="container mt-5">
+    <h2>Edit Order #{{ order.id }}</h2>
+
+    <form method="POST" class="card p-4 shadow">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">User</label>
+            <input type="text" class="form-control" value="{{ order.user.name }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea name="address" class="form-control" rows="2">{{ order.address }}</textarea>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">City</label>
+                <input type="text" name="city" class="form-control" value="{{ order.city }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">State</label>
+                <input type="text" name="state" class="form-control" value="{{ order.state }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Postal Code</label>
+                <input type="text" name="postal_code" class="form-control" value="{{ order.postal_code }}">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Country</label>
+            <input type="text" name="country" class="form-control" value="{{ order.country }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                {% for key, value in order.STATUS_CHOICES %}
+                    <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Total Amount</label>
+            <input type="text" class="form-control" value="₹{{ order.total_amount }}" disabled>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{% url 'ad_min:custom_admin_order_list' %}" class="btn btn-secondary">Cancel</a>
+    <a href="{% url 'ad_min:custom_admin_order_delete' order.id %}"
+       class="btn btn-danger"
+       onclick="return confirm('Are you sure you want to delete this order?');">
+       Delete
+    </a>
+</div>
+
+    </form>
+</div>
+{% endblock %}

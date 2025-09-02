@@ -1,0 +1,70 @@
+{% extends 'custom_admin_base.html' %}
+
+{% block navbar %}{% endblock %}   
+{% block content %}
+
+{% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+      
+        nav {
+            background: #495057;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        nav a:hover {
+            background: #6c757d;
+        }
+        main {
+            padding: 30px;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            max-width: 500px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+
+
+
+
+<nav>
+    {% if request.user.is_authenticated and request.user.is_staff %}
+        <!-- Show these if logged in as admin -->
+        <a href="{% url 'ad_min:custom_admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'ad_min:custom_admin_logout' %}">Logout</a>
+    {% else %}
+        <!-- Show this if not logged in -->
+        <a href="{% url 'ad_min:custom_admin_login' %}">Login</a>
+    {% endif %}
+</nav>
+
+<main>
+    <div class="card">
+        <h2>Welcome, {{ request.user.username }}</h2>
+        <p>This is the management page for admins.</p>
+        <p>From here, you can go to your <b>Dashboard</b> or <b>Logout</b>.</p>
+    </div>
+</main>
+
+
+{% endblock %}

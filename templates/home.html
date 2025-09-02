@@ -39,39 +39,43 @@
   </div>
 
   <!-- Pagination -->
-  <div class="mt-4">
-    <nav>
-      <ul class="pagination justify-content-center">
-        {% if products.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ products.previous_page_number }}" style="color: black;">Previous</a>
+  
+
+  <!-- Pagination -->
+<div class="mt-4">
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if products.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ products.previous_page_number }}" style="color: black;">Previous</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+      {% endif %}
+
+      {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+          <li class="page-item active">
+            <a class="page-link" style="background-color: black; border-color: black;">{{ num }}</a>
           </li>
         {% else %}
-          <li class="page-item disabled"><span class="page-link">Previous</span></li>
-        {% endif %}
-
-        {% for num in products.paginator.page_range %}
-          {% if products.number == num %}
-            <li class="page-item active">
-              <a class="page-link" style="background-color: black; border-color: black;">{{ num }}</a>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" style="color: black;" href="?page={{ num }}">{{ num }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-
-        {% if products.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ products.next_page_number }}" style="color: black;">Next</a>
+            <a class="page-link" style="color: black;" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
           </li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link">Next</span></li>
         {% endif %}
-      </ul>
-    </nav>
-  </div>
+      {% endfor %}
+
+      {% if products.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ products.next_page_number }}" style="color: black;">Next</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
 </div>
 
 {% endblock %}

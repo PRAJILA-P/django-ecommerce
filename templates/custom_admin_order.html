@@ -1,0 +1,57 @@
+{% extends "custom_admin_base.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+    .product-link {
+        color: black !important;   /* Makes the text black */
+        text-decoration: none !important; /* Removes underline */
+    }
+
+    .product-link:hover {
+        color: #555;  /* Optional: add hover effect */
+    }
+</style>
+
+ {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="text-align: center;">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">All Orders</h2>
+
+    <table class="table table-striped table-bordered shadow">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>
+                    <a href="{% url 'ad_min:custom_admin_order_detail' order.id %}" class="product-link">
+                        {{ order.user }}
+                    </a>
+                </td>
+                <td>₹{{ order.total_amount }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <a href="{% url 'ad_min:custom_admin_order_detail' order.id %}" class="btn btn-sm btn-primary">VIEW</a>
+                    
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

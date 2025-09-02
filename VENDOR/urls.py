@@ -4,7 +4,7 @@ from . import views
 app_name = "vendor"
 
 urlpatterns = [
-    # re_path(r'^$', views.index, name='index'),
+    re_path(r'^$', views.index, name='index'),
     path('vendor_home/',views.vendor_home,name='vendor_home'),
     path('vendor/',views.vendor,name='vendor'),
     path('vendor/register/',views.register_vendor,name='vendor_register'),  
@@ -19,9 +19,20 @@ urlpatterns = [
     path("forgot-password/", views.forgot_password, name="vendor_forgot_password"),
     path("reset-password/<str:token>/", views.reset_password, name="reset_password"),
     # path("product_view/",views.product_view,name="product_view"),
-    path('<slug:c_slug>/<slug:product_slug>/',views.proDetail,name='prodCatdetail'),
+
+    path('orders/<int:vendor_id>/', views.vendor_orders, name='vendor_orders'),
+    path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+
+
+    # path('<slug:c_slug>/<slug:product_slug>/',views.proDetail,name='prodCatdetail'),
     path("product/<int:product_id>/edit/", views.edit_product, name="edit_product"),
     path("product/<int:product_id>/delete/", views.delete_product, name="delete_product"),
     path("products/",views.product_search_vendor,name="vendor_products"),
 
+    path('reviews/', views.vendor_reviews, name='vendor_reviews'),
+    path('vendor/reviews/<int:product_id>/', views.vendor_review_detail, name='vendor_review_detail'),
+    
+    # path('vendor/<int:product_id>/product-review/', views.vendor_review_detail, name='vendor_review_detail'),
+
+    path('product/<slug:c_slug>/<slug:product_slug>/', views.proDetail, name='prodCatdetail'),
 ]

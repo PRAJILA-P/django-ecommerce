@@ -15,6 +15,11 @@ from .models import Order, OrderItem
 from .forms import CheckoutForm
 
 from django.contrib.auth.decorators import login_required
+
+
+from .forms import ReviewForm
+
+from .models import Review
 # Create your views here.
 
 # def index(request):
@@ -161,9 +166,18 @@ def products_by_category(request, category_slug):
     })
 
 
+# def prodCatdetail(request, category_slug, product_slug):
+#     product = get_object_or_404(Product, slug=product_slug, category__slug=category_slug)
+#     return render(request, "product.html", {"product": product})
+
+
 def prodCatdetail(request, category_slug, product_slug):
     product = get_object_or_404(Product, slug=product_slug, category__slug=category_slug)
-    return render(request, "product.html", {"product": product})
+    reviews = Review.objects.filter(product=product).order_by("-created_at")
+    return render(request, "product.html", {
+        "product": product,
+        "reviews": reviews,
+    })
 
 
 # def prodCatdetail(request, category_slug, product_slug):
@@ -379,3 +393,134 @@ def order_detail(request, order_id):
     """Show single order details"""
     order = get_object_or_404(Order, id=order_id)
     return render(request, "order.html", {"order": order})
+
+# def add_review(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
+
+#     # ✅ get logged-in Register user from session
+#     register_id = request.session.get("user_id")
+#     if not register_id:
+#         messages.error(request, "You must be logged in to submit a review.")
+#         return redirect("user:user_login")
+
+#     register_user = get_object_or_404(Register, id=register_id)
+
+#     if request.method == "POST":
+#         form = ReviewForm(request.POST)
+#         if form.is_valid():
+#             review = form.save(commit=False)
+#             review.product = product
+#             review.user = register_user   # ✅ assign Register instance
+#             review.save()
+#             messages.success(request, "Review submitted successfully!")
+#             return redirect("user:prodCatdetail", category_slug=product.category.slug, product_slug=product.slug)
+#     else:
+#         form = ReviewForm()
+
+#     return render(request, "add_review.html", {"form": form, "product": product})
+
+
+def add_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    # ✅ get logged-in Register user from session
+    register_id = request.session.get("user_id")
+    if not register_id:
+        messages.error(request, "You must be logged in to submit a review.")
+        return redirect("user:user_login")
+
+    register_user = get_object_or_404(Register, id=register_id)
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            rating = form.cleaned_data["rating"]
+            comment = form.cleaned_data["comment"]
+
+            # ✅ Check if user already reviewed this product
+            existing_review = Review.objects.filter(user=register_user, product=product).first()
+
+            if existing_review:
+                # update instead of creating duplicate
+                existing_review.rating = rating
+                existing_review.comment = comment
+                existing_review.save()
+                messages.success(request, "Your review has been updated.")
+            else:
+                # create new review
+                Review.objects.create(
+                    user=register_user,
+                    product=product,
+                    rating=rating,
+                    comment=comment,
+                )
+                messages.success(request, "Your review has been submitted.")
+
+            return redirect("user:prodCatdetail", category_slug=product.category.slug, product_slug=product.slug)
+
+    else:
+        form = ReviewForm()
+
+    return render(request, "add_review.html", {"form": form, "product": product})
+
+
+
+
+def cancel_order(request, order_id):
+    # Ensure user is logged in (using your session key 'user_id')
+    user_id = request.session.get("user_id")
+    if not user_id:
+        messages.error(request, "Please login first to cancel an order.")
+        return redirect("user:user_login")
+
+    # Verify the logged-in user exists
+    try:
+        user = Register.objects.get(id=user_id)
+    except Register.DoesNotExist:
+        messages.error(request, "User not found.")
+        return redirect("user:user_login")
+
+    # Fetch the order only if it belongs to this user
+    order = get_object_or_404(Order, id=order_id, user=user)
+
+    if order.status not in ["Cancelled", "Delivered"]:
+        order.status = "Cancelled"
+        order.save()
+        messages.success(request, f"Order #{order.id} has been cancelled successfully.")
+    else:
+        messages.warning(request, "This order cannot be cancelled.")
+
+    return redirect("user:order_list")
+
+def product_search(request):
+    query = request.GET.get("q")
+    categories = Category.objects.all()
+
+    if query:
+        # get categories matching the query (both main & sub)
+        matching_categories = Category.objects.filter(
+            Q(name__icontains=query) | Q(slug__icontains=query)
+        )
+
+        # include products in those categories + their subcategories
+        product_list = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__in=matching_categories) |
+            Q(category__parent__in=matching_categories)  # ✅ include parent match
+        ).distinct()
+    else:
+        product_list = Product.objects.all()
+
+    # Pagination
+    paginator = Paginator(product_list, 8)
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
+
+    return render(request, "home.html", {
+        "categories": categories,
+        "products": products,
+        "query": query,
+    })
+
+

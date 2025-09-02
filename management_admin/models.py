@@ -25,8 +25,8 @@ class Category(models.Model):
         verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.slug:  # If slug is empty, create one from the name
-            self.slug = slugify(self.name)
+        
+        self.slug = slugify(self.name)
         super().save(*args, **kwargs)    
 
     def get_url(self):

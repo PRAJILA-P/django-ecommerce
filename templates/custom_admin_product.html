@@ -1,0 +1,72 @@
+{% extends 'custom_admin_base.html' %}
+{% block content %}
+{% load static %}
+
+<style>
+  .form-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 20px 25px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  .form-container h2 { text-align: center; margin-bottom: 20px; font-weight: 600; color: #000; }
+  .form-container label { font-weight: 500; color: #222; }
+
+  /* Make text/number/file inputs full width, but NOT checkboxes/radios */
+  .form-container input:not([type="checkbox"]):not([type="radio"]),
+  .form-container select,
+  .form-container textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+    color: #000;
+  }
+
+  /* Keep checkboxes inline with their labels */
+  .form-container input[type="checkbox"] {
+    width: auto;
+    margin: 0 6px 0 0;
+    vertical-align: middle;
+  }
+  /* Works whether the label is before or after the checkbox */
+  .form-container form p input[type="checkbox"] + label,
+  .form-container form p label + input[type="checkbox"] {
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .btn-group { display: flex; justify-content: center; gap: 10px; }
+  .btn { padding: 8px 16px; border-radius: 4px; font-weight: 500; border: none; cursor: pointer; }
+  .btn-success { background: #000; color: #fff; }
+  .btn-secondary { background: #555; color: #fff; }
+  
+</style>
+
+
+
+
+<div class="form-container">
+  <h2>Product Details / Edit</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="btn-group">
+      <button type="submit" class="btn btn-dark">Save</button>
+      <a href="{% url 'ad_min:custom_admin_product_delete' product.id %}" class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to delete this order item?');">
+                Delete
+            </a>
+      <a href="{% url 'ad_min:custom_admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

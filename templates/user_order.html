@@ -7,8 +7,7 @@
   {% for order in orders %}
   <div class="card mb-5 border-dark" style="background-color: #fff; border: 1px solid #000;">
     <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #000;">
-      <h4>Order</h4>
-      <!-- <h4>Order #{{ order.id }}</h4> -->
+      <h4>Order #{{ order.id }}</h4>
       <small>Placed on: {{ order.created_at|date:"d M, Y H:i" }}</small>
     </div>
     <div class="card-body">
@@ -21,7 +20,9 @@
         </div>
       </div>
 
-      <p><strong>Shipping Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.state }}, {{ order.postal_code }}, {{ order.country }}</p>
+      <p><strong>Shipping Address:</strong> 
+        {{ order.address }}, {{ order.city }}, {{ order.state }}, {{ order.postal_code }}, {{ order.country }}
+      </p>
 
       <div class="table-responsive">
         <table class="table table-bordered" style="border: 1px solid #000;">
@@ -36,37 +37,68 @@
           <tbody>
             {% for item in order.items.all %}
             <tr>
-              <!-- <td style="border: 1px solid #000;">{{ item.product.name }}</td> -->
-            <td style="border: 1px solid #000;">
-  <a href="{% url 'user:prodCatdetail' item.product.category.slug item.product.slug %}" 
-     style="color: black; text-decoration: none;">
-     {{ item.product.name }}
-  </a>
-</td>
-
-
+              <td style="border: 1px solid #000;">
+                <a href="{% url 'user:prodCatdetail' item.product.category.slug item.product.slug %}" 
+                   style="color: black; text-decoration: none;">
+                   {{ item.product.name }}
+                </a>
+              </td>
               <td style="border: 1px solid #000;">{{ item.quantity }}</td>
-              <!-- <td style="border: 1px solid #000;">₹{{ item.final_price|floatformat:2 }}</td> -->
-               <td>
-  {% if item.product.final_price %}
-    ₹{{ item.product.final_price }}
-  {% else %}
-    ₹{{ item.product.price }}
-  {% endif %}
+              <td style="border: 1px solid #000;">
+                {% if item.product.final_price %}
+                  ₹{{ item.product.final_price }}
+                {% else %}
+                  ₹{{ item.product.price }}
+                {% endif %}
+              </td>
+              <td style="border: 1px solid #000;">₹{{ item.subtotal|floatformat:2 }}</td>
+             <td>{% if order.status == "Cancelled" %}
+  <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
+{% elif order.status == "Delivered" %}
+  <button class="btn btn-success btn-sm" disabled>Delivered</button>
+{% else %}
+  <form method="post" action="{% url 'user:cancel_order' order.id %}" style="display:inline;" 
+        onsubmit="return confirm('Are you sure you want to cancel this order?');">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
+  </form>
+{% endif %}
 </td>
-
-              <!-- <td style="border: 1px solid #000;">₹{{ item.subtotal|floatformat:2 }}</td> -->
-              <td>₹{{ item.subtotal|floatformat:2 }}</td>
-
-
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
 
+      <!-- Buttons section -->
       <div class="text-end mt-3">
-        <a href="{% url 'user:order_detail' order.id %}" class="btn btn-sm" style="border: 1px solid #000; color: #000; background-color: #fff;">View Details</a>
+        {% if order.items.first.product %}
+          <a href="{% url 'user:add_review' order.items.first.product.id %}" 
+             class="btn btn-sm" 
+             style="border: 1px solid #000; color: #000; background-color: #fff;">
+             Write Review
+          </a>
+        {% endif %}
+
+        <a href="{% url 'user:order_detail' order.id %}" 
+           class="btn btn-sm" 
+           style="border: 1px solid #000; color: #000; background-color: #fff;">
+           View Details
+        </a>
+
+     {% if order.status == "Cancelled" %}
+  <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
+{% elif order.status == "Delivered" %}
+  <button class="btn btn-success btn-sm" disabled>Delivered</button>
+{% else %}
+  <form method="post" action="{% url 'user:cancel_order' order.id %}" style="display:inline;" 
+        onsubmit="return confirm('Are you sure you want to cancel this order?');">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
+  </form>
+{% endif %}
+
+
       </div>
     </div>
   </div>
