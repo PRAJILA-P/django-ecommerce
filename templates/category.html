@@ -4,7 +4,26 @@
 {% block content %}
 
 <div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
   <h2 class="mb-4">{{ category.name }}</h2>
+  <div class="col-12 col-md-auto d-none d-md-block" style="margin-right: 30px;">
+   <select class="form-select" style="width: 200px;" 
+        aria-label="Default select example"
+        onchange="if(this.value) window.location.href=this.value;">
+  <option selected disabled><strong>SORT BY:</strong></option>
+  <option value="{% url 'user:products_by_category' category.slug %}">Recommended</option>
+  <!-- <option value="">Popularity</option> -->
+  <option value="{% url 'user:high-discount' category.slug %}">Better Discount</option>
+  <!-- <option value="">What's New</option> -->
+  <option value="{% url 'user:high-price' category.slug %}">Price: High To Low</option>
+  <option value="{% url 'user:low-price' category.slug %}">Price: Low To High</option>
+  <!-- <option value="">Customer Rating</option> -->
+</select>
+
+  </div>
+</div>
+
+  
 
   {% if subcategories %}
     <h4>Subcategories</h4>

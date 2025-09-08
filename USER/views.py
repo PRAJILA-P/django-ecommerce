@@ -20,6 +20,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import ReviewForm
 
 from .models import Review
+
+from django.db.models import F, ExpressionWrapper, DecimalField
 # Create your views here.
 
 # def index(request):
@@ -370,22 +372,36 @@ def checkout(request):
 
 
 # @login_required
+# def order_list(request):
+#     # 1️⃣ Get user id from session
+#     user_id = request.session.get("user_id")
+#     if not user_id:
+#         return redirect("user:user_login")
+
+#     # 2️⃣ Fetch Register instance
+#     user = get_object_or_404(Register, id=user_id)
+
+#     # 3️⃣ Filter orders
+#     orders = Order.objects.filter(user=user).order_by("-created_at")
+
+#     # 4️⃣ Calculate subtotal for items
+#     # for order in orders:
+#     #     for item in order.items.all():
+#     #         item.subtotal = item.price * item.quantity
+
+#     return render(request, "user_order.html", {"orders": orders})
+
 def order_list(request):
-    # 1️⃣ Get user id from session
     user_id = request.session.get("user_id")
     if not user_id:
         return redirect("user:user_login")
 
-    # 2️⃣ Fetch Register instance
     user = get_object_or_404(Register, id=user_id)
-
-    # 3️⃣ Filter orders
     orders = Order.objects.filter(user=user).order_by("-created_at")
 
-    # 4️⃣ Calculate subtotal for items
-    # for order in orders:
-    #     for item in order.items.all():
-    #         item.subtotal = item.price * item.quantity
+    # ✅ Calculate grand total for each order
+    for order in orders:
+        order.grand_total = sum(item.subtotal for item in order.items.all())
 
     return render(request, "user_order.html", {"orders": orders})
 
@@ -466,31 +482,71 @@ def add_review(request, product_id):
 
 
 
-def cancel_order(request, order_id):
-    # Ensure user is logged in (using your session key 'user_id')
+def cancel_order_item(request, item_id):
+    if request.method != "POST":
+        messages.warning(request, "Invalid request method.")
+        return redirect("user:order_list")
+
     user_id = request.session.get("user_id")
     if not user_id:
-        messages.error(request, "Please login first to cancel an order.")
+        messages.error(request, "Please login first to cancel a product.")
         return redirect("user:user_login")
 
-    # Verify the logged-in user exists
     try:
         user = Register.objects.get(id=user_id)
     except Register.DoesNotExist:
         messages.error(request, "User not found.")
         return redirect("user:user_login")
 
-    # Fetch the order only if it belongs to this user
-    order = get_object_or_404(Order, id=order_id, user=user)
+    # Get the specific order item for this user
+    order_item = get_object_or_404(OrderItem, id=item_id, order__user=user)
+
+    if order_item.status not in ["Cancelled", "Delivered"]:
+        order_item.status = "Cancelled"
+        order_item.save()
+
+        # If all items are cancelled → cancel the whole order
+        order = order_item.order
+        if all(item.status == "Cancelled" for item in order.items.all()):
+            order.status = "Cancelled"
+            order.save()
+
+        messages.success(request, f"{order_item.product.name} has been cancelled successfully.")
+    else:
+        messages.warning(request, "This product cannot be cancelled.")
+
+    return redirect("user:order_list")
+
+
+def cancel_order(request, order_id):
+    if request.method != "POST":
+        messages.warning(request, "Invalid request method.")
+        return redirect("user:order_list")
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        messages.error(request, "Please login first to cancel the order.")
+        return redirect("user:user_login")
+
+    try:
+        order = get_object_or_404(Order, id=order_id, user__id=user_id)
+    except Order.DoesNotExist:
+        messages.error(request, "Order not found.")
+        return redirect("user:order_list")
 
     if order.status not in ["Cancelled", "Delivered"]:
         order.status = "Cancelled"
         order.save()
+
+        # Cancel all order items
+        order.items.update(status="Cancelled")
+
         messages.success(request, f"Order #{order.id} has been cancelled successfully.")
     else:
         messages.warning(request, "This order cannot be cancelled.")
 
     return redirect("user:order_list")
+
 
 def product_search(request):
     query = request.GET.get("q")
@@ -524,3 +580,71 @@ def product_search(request):
     })
 
 
+
+
+def high_discount(request, category_slug):
+    category = get_object_or_404(Category, slug=category_slug)
+
+    # Category + its subcategories
+    categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
+
+    # Products sorted by highest discount
+    product_list = Product.objects.filter(category__in=categories).order_by('-discount')
+
+    paginator = Paginator(product_list, 8)
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
+
+    return render(request, "category.html", {
+        "category": category,
+        "products": products
+    })
+
+def high_price(request, category_slug):
+    category = get_object_or_404(Category, slug=category_slug)
+
+    # Category + its subcategories
+    categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
+
+    # Products sorted by highest discount
+    product_list = Product.objects.filter(category__in=categories).annotate(
+        calc_price=ExpressionWrapper(
+            F('price') - (F('price') * F('discount') / 100),
+            output_field=DecimalField(max_digits=10, decimal_places=2)
+        )
+    ).order_by('-calc_price')
+
+    paginator = Paginator(product_list, 8)
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
+
+    return render(request, "category.html", {
+        "category": category,
+        "products": products
+    })
+
+
+
+
+def low_price(request, category_slug):
+    category = get_object_or_404(Category, slug=category_slug)
+
+    # Category + its subcategories
+    categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
+
+    # Annotate as calc_price to avoid conflict with model property
+    product_list = Product.objects.filter(category__in=categories).annotate(
+        calc_price=ExpressionWrapper(
+            F('price') - (F('price') * F('discount') / 100),
+            output_field=DecimalField(max_digits=10, decimal_places=2)
+        )
+    ).order_by('calc_price')   # ascending = low to high
+
+    paginator = Paginator(product_list, 8)
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
+
+    return render(request, "category.html", {
+        "category": category,
+        "products": products
+    })

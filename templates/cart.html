@@ -57,11 +57,12 @@
       </p>
     {% endif %}
 
-    <p style="margin: 8px 0; font-size: 15px; color: #444;">
-      Qty: <span style="font-weight: bold;">{{ item.quantity }}</span> × 
-       ₹{{ item.product.final_price }} = 
-      <strong style="color: #000;"> ₹{{ item.total_price }}</strong>
-    </p>
+   <p style="margin: 8px 0; font-size: 15px; color: #444;">
+  Qty: <span style="font-weight: bold;">{{ item.quantity }}</span> × 
+  ₹{{ item.product.final_price|floatformat:2 }} = 
+  <strong style="color: #000;">₹{{ item.total_price|floatformat:2 }}</strong>
+</p>
+
   </div>
 
   <!-- Quantity Controls -->

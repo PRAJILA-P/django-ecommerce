@@ -16,7 +16,7 @@
           <p><strong>Status:</strong> {{ order.status }}</p>
         </div>
         <div class="col-md-6 text-md-end">
-          <p><strong>Total Amount:</strong> ₹{{ order.total_amount|floatformat:2 }}</p>
+          <p><strong>Total Amount:</strong> ₹{{ order.grand_total|floatformat:2 }}</p>
         </div>
       </div>
 
@@ -31,7 +31,8 @@
               <th style="border: 1px solid #000;">Product</th>
               <th style="border: 1px solid #000;">Quantity</th>
               <th style="border: 1px solid #000;">Price</th>
-              <th style="border: 1px solid #000;">Total Price</th>
+              <th style="border: 1px solid #000;">Discount Price</th>
+              <th style="border: 1px solid #000;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -45,27 +46,32 @@
               </td>
               <td style="border: 1px solid #000;">{{ item.quantity }}</td>
               <td style="border: 1px solid #000;">
-                {% if item.product.final_price %}
-                  ₹{{ item.product.final_price }}
+                ₹{{ item.product.price|floatformat:2 }}
+              </td>
+              <td style="border: 1px solid #000;">
+                ₹{{ item.subtotal|floatformat:2 }}
+              </td>
+              <td style="border: 1px solid #000;">
+                {% if item.status == "Cancelled" %}
+                  <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
+                {% elif item.status == "Delivered" %}
+                  <button class="btn btn-success btn-sm" disabled>Delivered</button>
                 {% else %}
-                  ₹{{ item.product.price }}
+                  <form method="post" action="{% url 'user:cancel_order_item' item.id %}" style="display:inline;"
+                        onsubmit="return confirm('Cancel {{ item.product.name }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                  </form>
                 {% endif %}
               </td>
-              <td style="border: 1px solid #000;">₹{{ item.subtotal|floatformat:2 }}</td>
-             <td>{% if order.status == "Cancelled" %}
-  <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
-{% elif order.status == "Delivered" %}
-  <button class="btn btn-success btn-sm" disabled>Delivered</button>
-{% else %}
-  <form method="post" action="{% url 'user:cancel_order' order.id %}" style="display:inline;" 
-        onsubmit="return confirm('Are you sure you want to cancel this order?');">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
-  </form>
-{% endif %}
-</td>
             </tr>
             {% endfor %}
+
+            <!-- Grand Total Row -->
+            <tr>
+              <td colspan="3" class="text-end"><strong>Grand Total</strong></td>
+              <td colspan="2"><strong>₹{{ order.grand_total|floatformat:2 }}</strong></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -86,20 +92,19 @@
            View Details
         </a>
 
-     {% if order.status == "Cancelled" %}
-  <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
-{% elif order.status == "Delivered" %}
-  <button class="btn btn-success btn-sm" disabled>Delivered</button>
-{% else %}
-  <form method="post" action="{% url 'user:cancel_order' order.id %}" style="display:inline;" 
-        onsubmit="return confirm('Are you sure you want to cancel this order?');">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
-  </form>
-{% endif %}
-
-
+        {% if order.status == "Cancelled" %}
+          <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
+        {% elif order.status == "Delivered" %}
+          <button class="btn btn-success btn-sm" disabled>Delivered</button>
+        {% else %}
+          <form method="post" action="{% url 'user:cancel_order' order.id %}" style="display:inline;" 
+                onsubmit="return confirm('Are you sure you want to cancel this order?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
+          </form>
+        {% endif %}
       </div>
+
     </div>
   </div>
   {% empty %}

@@ -33,7 +33,7 @@ class Cart(models.Model):
         return f"{self.user.name} - {self.product.name} ({self.quantity})"
 
     def total_price(self):
-        return self.product.price * self.quantity
+        return self.product.final_price * self.quantity
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -62,10 +62,16 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Cancelled', 'Cancelled'),
+        ('Delivered', 'Delivered'),
+    ]
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)  # price at purchase time
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
 
     @property
     def subtotal(self):

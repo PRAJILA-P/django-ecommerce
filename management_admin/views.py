@@ -16,6 +16,8 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 
 from .forms import CategoryForm  
+
+from decimal import Decimal
 # Create your views here.
 
 # def add_category(request):
@@ -227,18 +229,47 @@ def custom_admin_order_item_list(request):
     return render(request,"custom_admin_order_item_list.html",{"orderitems": orderitems})
 
 
+# def custom_admin_order_item_detail(request, pk):
+#     item = get_object_or_404(OrderItem, pk=pk)
+
+#     if request.method == "POST":
+#         item.quantity = request.POST.get("quantity")
+#         item.price = request.POST.get("price")
+#         item.save()
+#         messages.success(request, "Order Item updated successfully.")
+#         return redirect("ad_min:custom_admin_order_item_list")
+
+#     return render(request, "custom_admin_order_item_detail.html", {"item": item})
+
+
 def custom_admin_order_item_detail(request, pk):
     item = get_object_or_404(OrderItem, pk=pk)
 
     if request.method == "POST":
-        item.quantity = request.POST.get("quantity")
-        item.price = request.POST.get("price")
+        # Get and convert values safely, fall back to current values if invalid
+        try:
+            quantity = int(request.POST.get("quantity", item.quantity))
+            price = Decimal(request.POST.get("price", item.price))
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid input for quantity or price.")
+            return redirect(request.path)
+
+        status = request.POST.get("status")
+        if status not in dict(OrderItem.STATUS_CHOICES):
+            messages.error(request, "Invalid status selected.")
+            return redirect(request.path)
+
+        # Update fields
+        item.quantity = quantity
+        item.price = price
+        item.status = status
+        # item.subtotal = price * quantity
         item.save()
+
         messages.success(request, "Order Item updated successfully.")
         return redirect("ad_min:custom_admin_order_item_list")
 
     return render(request, "custom_admin_order_item_detail.html", {"item": item})
-
 
 def custom_admin_order_item_delete(request, pk):
     item = get_object_or_404(OrderItem, pk=pk)
@@ -268,3 +299,13 @@ def custom_admin_review_delete(request, review_id):
     review.delete()
     messages.success(request, "Review deleted successfully!")
     return redirect("ad_min:custom_admin_review_list")
+
+
+def orderitem_to_order(request, orderitem_id):
+    orderitem = get_object_or_404(OrderItem, id=orderitem_id)
+    order = orderitem.order  # get the related order
+    return redirect('ad_min:custom_admin_order_detail', order_id=order.id)
+
+
+
+

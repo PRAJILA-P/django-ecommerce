@@ -20,7 +20,14 @@ urlpatterns = [
     # path("orders/<int:order_id>/", views.order_list, name="order_list"),
     path("orders/<int:order_id>/",views.order_detail, name="order_detail"),
 
-    path("cancel-order/<int:order_id>/", views.cancel_order, name="cancel_order"),
+    path("cancel-order/<int:item_id>/", views.cancel_order_item, name="cancel_order_item"),
+    path("cancel-whole-order/<int:order_id>/", views.cancel_order, name="cancel_order"),
+
+
+    path("high-discount/<slug:category_slug>/", views.high_discount, name="high-discount"),
+    path("high-price/<slug:category_slug>/", views.high_price, name="high-price"),
+    path("low-price/<slug:category_slug>/", views.low_price, name="low-price"),
+
 
 
     path("category/<slug:category_slug>/", views.products_by_category, name="products_by_category"),
@@ -42,5 +49,6 @@ urlpatterns = [
 
     # path("orders/<int:order_id>/", views.order_detail, name="order_detail"),
 
+   
 
 ]

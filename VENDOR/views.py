@@ -160,21 +160,21 @@ def edit_vendor(request, vendor_id):
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
 
-        # Validate phone number
+        
         phone_clean = phone.replace(" ", "")  
         if not re.fullmatch(r"\+?\d{10,15}", phone_clean):
             messages.error(request, "Invalid phone number.")
             return redirect('vendor:edit_vendor', vendor_id=vendor.id)
-        # Check password change
+        
         if password or confirm_password:
             if password != confirm_password:
                 messages.error(request, "Passwords do not match.")
                 return redirect('vendor:edit_vendor', vendor_id=vendor.id)
             else:
-                # Hash the new password before saving
+                
                 vendor.password = make_password(password)
 
-        # Update other fields
+        
         vendor.name = name
         vendor.phone = phone
         vendor.email = email
@@ -247,7 +247,7 @@ def addproduct(request):
         discount = request.POST.get("discount")
         stock = request.POST.get("stock")
 
-        # Convert values to proper types
+        
         try:
             price = float(price)
         except (TypeError, ValueError):
@@ -270,12 +270,12 @@ def addproduct(request):
         subcategory_id = request.POST.get("subcategory")
         category = get_object_or_404(Category, id=subcategory_id)
 
-        # Get uploaded files
+        
         image = request.FILES.get("image")
         image2 = request.FILES.get("image2")
         image3 = request.FILES.get("image3")
 
-        # Save product with vendor assigned
+        
         product = Product(
             name=name,
             description=description,
@@ -291,7 +291,7 @@ def addproduct(request):
         product.save()
 
         # messages.success(request, "Product added successfully!")
-        return redirect("vendor:vendor")  # or product list page
+        return redirect("vendor:vendor")  
 
     categories = Category.objects.all()
     return render(request, "product_add.html", {"categories": categories})
@@ -307,15 +307,15 @@ def forgot_password(request):
         email = request.POST.get("email")
         try:
             vendor = VendorRegister.objects.get(email=email)
-            token = get_random_string(30)  # random string as reset token
-            vendor.reset_token = token     # save token in db
+            token = get_random_string(30)  
+            vendor.reset_token = token     
             vendor.save()
 
             reset_link = request.build_absolute_uri(
                 f"/reset-password/{token}/"
             )
 
-            # send email
+            
             send_mail(
                 "Reset Your Password",
                 f"Click this link to reset your password: {reset_link}",
@@ -350,7 +350,7 @@ def reset_password(request, token):
 
         
         vendor.password = make_password(password)
-        vendor.reset_token = None  # clear token after reset
+        vendor.reset_token = None  
         vendor.save()
 
         messages.success(request, "Password reset successful. You can log in now.")
@@ -364,7 +364,7 @@ def vendor(request):
     vendor_email = request.session.get('vendor_email')  # Example: you saved vendor email in session
     vendor = VendorRegister.objects.get(email=vendor_email)
 
-    # fetch only products of this vendor
+    
     product_list = Product.objects.filter(vendor=vendor)
     paginator = Paginator(product_list, 8)  
     page_number = request.GET.get('page')
@@ -394,12 +394,12 @@ def edit_product(request, product_id):
     categories = Category.objects.all()  # ✅ fetch all categories
 
     if request.method == "POST":
-        product.name = request.POST.get("name")
+        product.name = request.POST.get("name")     
         product.description = request.POST.get("description")
         product.price = request.POST.get("price")
         product.discount = request.POST.get("discount")
         product.stock = request.POST.get("stock")
-        product.category_id = request.POST["category"]  # ✅ update category
+        product.category_id = request.POST["category"]  
 
         if "image" in request.FILES:
             product.image = request.FILES["image"]
@@ -410,18 +410,12 @@ def edit_product(request, product_id):
         
         
         product.save()
-        return redirect(
-            "vendor:prodCatdetail",
-            c_slug=product.category.slug,
-            product_slug=product.slug,
-        )
+        return redirect("vendor:prodCatdetail",c_slug=product.category.slug,product_slug=product.slug)
 
     # ✅ now categories will be available in template
-    return render(
-        request,
-        "edit_product.html",
-        {"product": product, "categories": categories},
-    )
+    return render(request,"edit_product.html",{"product": product, "categories": categories})
+
+
 # def delete_product(request, product_id):
 #     product = get_object_or_404(Product, id=product_id)
 
@@ -481,7 +475,7 @@ def product_search_vendor(request):
             Q(category__name__icontains=query) 
             
         )
-    else:
+    else: 
         products = Product.objects.filter(vendor=vendor)  # ✅ only this vendor
 
     # Pagination (8 per page)
@@ -492,6 +486,7 @@ def product_search_vendor(request):
     return render(request, "vendor_page.html", {
         "products": products_page,
         "query": query,
+        "vendor": vendor,
     })
 
 
@@ -543,7 +538,7 @@ def vendor_reviews(request):
 
     # fetch only products of this vendor
     product_list = Product.objects.filter(vendor=vendor)
-    paginator = Paginator(product_list, 10)  
+    paginator = Paginator(product_list, 12)  
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
