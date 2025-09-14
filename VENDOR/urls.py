@@ -21,7 +21,8 @@ urlpatterns = [
     # path("product_view/",views.product_view,name="product_view"),
 
     path('orders/<int:vendor_id>/', views.vendor_orders, name='vendor_orders'),
-    path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('cancel-item/<int:item_id>/', views.cancel_order_item, name="cancel_order_item"),
+    # path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
 
 
     # path('<slug:c_slug>/<slug:product_slug>/',views.proDetail,name='prodCatdetail'),

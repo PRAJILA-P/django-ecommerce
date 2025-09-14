@@ -154,7 +154,7 @@ def index(request):
 def products_by_category(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
 
-    # Category + its subcategories
+    
     categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
     product_list = Product.objects.filter(category__in=categories)
     
@@ -250,7 +250,7 @@ def remove_from_cart(request, cart_id):
 
 
 def update_quantity(request, cart_id, action):
-    user_id = request.session.get("user_id")   # adjust key as per your login system
+    user_id = request.session.get("user_id")   
     cart_item = get_object_or_404(Cart, id=cart_id, user_id=user_id)
 
     if action == "increase":
@@ -309,26 +309,22 @@ def update_quantity(request, cart_id, action):
 #     return render(request, "checkout.html", {"cart_items": cart_items})
 
 def checkout(request):
-    # ✅ Fetch logged-in custom user from session
-    user_id = request.session.get("user_id")  # or "user_email" if you stored email
+    user_id = request.session.get("user_id") 
     if not user_id:
-        return redirect("user:user_login")  # not logged in
+        return redirect("user:user_login")  
 
     user = get_object_or_404(Register, id=user_id)
-
     cart_items = Cart.objects.filter(user=user)
 
-
     if not cart_items.exists():
-        # messages.error(request,"your cart is empty")
-        return redirect("user:view_cart")  # or show a message
+        return redirect("user:view_cart")  
 
-
+    # calculate total amount from cart
+    total_amount = sum(item.product.final_price * item.quantity for item in cart_items)
 
     if request.method == "POST":
         form = CheckoutForm(request.POST)
         if form.is_valid():
-            # ✅ Create order for this Register user
             order = Order.objects.create(
                 user=user,
                 address=form.cleaned_data['address'],
@@ -338,23 +334,25 @@ def checkout(request):
                 country=form.cleaned_data['country'],
             )
 
-            # ✅ Move cart items into order items
             for item in cart_items:
                 OrderItem.objects.create(
                     order=order,
                     product=item.product,
                     quantity=item.quantity,
-                    price=item.product.price,  # keep purchase price
+                    price=item.product.price,
                 )
 
-            # ✅ Clear cart
             cart_items.delete()
-
             return redirect("user:order_detail", order_id=order.id)
     else:
         form = CheckoutForm()
 
-    return render(request, "checkout.html", {"form": form, "cart_items": cart_items})
+    return render(
+        request,
+        "checkout.html",
+        {"form": form, "cart_items": cart_items, "total_amount": total_amount}
+    )
+
 # def order_list(request):
 #     """Show all orders of logged-in user"""
 #     user_id = request.session.get("user_id")
@@ -399,14 +397,14 @@ def order_list(request):
     user = get_object_or_404(Register, id=user_id)
     orders = Order.objects.filter(user=user).order_by("-created_at")
 
-    # ✅ Calculate grand total for each order
+    
     for order in orders:
         order.grand_total = sum(item.subtotal for item in order.items.all())
 
     return render(request, "user_order.html", {"orders": orders})
 
 def order_detail(request, order_id):
-    """Show single order details"""
+    
     order = get_object_or_404(Order, id=order_id)
     return render(request, "order.html", {"order": order})
 
@@ -439,7 +437,7 @@ def order_detail(request, order_id):
 def add_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
-    # ✅ get logged-in Register user from session
+   
     register_id = request.session.get("user_id")
     if not register_id:
         messages.error(request, "You must be logged in to submit a review.")
@@ -453,11 +451,11 @@ def add_review(request, product_id):
             rating = form.cleaned_data["rating"]
             comment = form.cleaned_data["comment"]
 
-            # ✅ Check if user already reviewed this product
+            
             existing_review = Review.objects.filter(user=register_user, product=product).first()
 
             if existing_review:
-                # update instead of creating duplicate
+                
                 existing_review.rating = rating
                 existing_review.comment = comment
                 existing_review.save()
@@ -498,7 +496,7 @@ def cancel_order_item(request, item_id):
         messages.error(request, "User not found.")
         return redirect("user:user_login")
 
-    # Get the specific order item for this user
+    
     order_item = get_object_or_404(OrderItem, id=item_id, order__user=user)
 
     if order_item.status not in ["Cancelled", "Delivered"]:
@@ -603,10 +601,10 @@ def high_discount(request, category_slug):
 def high_price(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
 
-    # Category + its subcategories
+    
     categories = Category.objects.filter(Q(id=category.id) | Q(parent=category))
 
-    # Products sorted by highest discount
+    
     product_list = Product.objects.filter(category__in=categories).annotate(
         calc_price=ExpressionWrapper(
             F('price') - (F('price') * F('discount') / 100),
@@ -638,7 +636,7 @@ def low_price(request, category_slug):
             F('price') - (F('price') * F('discount') / 100),
             output_field=DecimalField(max_digits=10, decimal_places=2)
         )
-    ).order_by('calc_price')   # ascending = low to high
+    ).order_by('calc_price')   
 
     paginator = Paginator(product_list, 8)
     page_number = request.GET.get("page")

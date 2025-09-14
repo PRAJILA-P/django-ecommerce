@@ -7,7 +7,7 @@
   {% for order in orders %}
   <div class="card mb-5 border-dark" style="background-color: #fff; border: 1px solid #000;">
     <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #000;">
-      <h4>Order #{{ order.id }}</h4>
+      <!-- <h4>Order #{{ order.id }}</h4> -->
       <small>Placed on: {{ order.created_at|date:"d M, Y H:i" }}</small>
     </div>
     <div class="card-body">
@@ -33,6 +33,7 @@
               <th style="border: 1px solid #000;">Price</th>
               <th style="border: 1px solid #000;">Discount Price</th>
               <th style="border: 1px solid #000;">Actions</th>
+              <th style="border: 1px solid #000;">Review</th>
             </tr>
           </thead>
           <tbody>
@@ -46,7 +47,7 @@
               </td>
               <td style="border: 1px solid #000;">{{ item.quantity }}</td>
               <td style="border: 1px solid #000;">
-                ₹{{ item.product.price|floatformat:2 }}
+                ₹{{ item.product.final_price|floatformat:2 }}
               </td>
               <td style="border: 1px solid #000;">
                 ₹{{ item.subtotal|floatformat:2 }}
@@ -64,13 +65,20 @@
                   </form>
                 {% endif %}
               </td>
+              <td>
+                <a href="{% url 'user:add_review' item.product.id %}" 
+         class="btn btn-sm" 
+         style="border: 1px solid #000; color: #000; background-color: #fff;">
+         Write Review
+      </a>
+              </td>
             </tr>
             {% endfor %}
 
             <!-- Grand Total Row -->
             <tr>
               <td colspan="3" class="text-end"><strong>Grand Total</strong></td>
-              <td colspan="2"><strong>₹{{ order.grand_total|floatformat:2 }}</strong></td>
+              <td colspan="3"><strong>₹{{ order.grand_total|floatformat:2 }}</strong></td>
             </tr>
           </tbody>
         </table>
@@ -78,13 +86,13 @@
 
       <!-- Buttons section -->
       <div class="text-end mt-3">
-        {% if order.items.first.product %}
+        <!-- {% if order.items.first.product %}
           <a href="{% url 'user:add_review' order.items.first.product.id %}" 
              class="btn btn-sm" 
              style="border: 1px solid #000; color: #000; background-color: #fff;">
              Write Review
           </a>
-        {% endif %}
+        {% endif %} -->
 
         <a href="{% url 'user:order_detail' order.id %}" 
            class="btn btn-sm" 

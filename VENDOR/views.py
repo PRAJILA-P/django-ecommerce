@@ -283,7 +283,7 @@ def addproduct(request):
             discount=discount,
             stock=stock,
             category=category,
-            vendor=vendor,   # 🔑 fix: assign vendor
+            vendor=vendor,   
             image=image,
             image2=image2,
             image3=image3,
@@ -361,7 +361,7 @@ def reset_password(request, token):
 
 
 def vendor(request):
-    vendor_email = request.session.get('vendor_email')  # Example: you saved vendor email in session
+    vendor_email = request.session.get('vendor_email')  
     vendor = VendorRegister.objects.get(email=vendor_email)
 
     
@@ -391,8 +391,7 @@ def proDetail(request, c_slug, product_slug):
 
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    categories = Category.objects.all()  # ✅ fetch all categories
-
+    categories = Category.objects.all()  
     if request.method == "POST":
         product.name = request.POST.get("name")     
         product.description = request.POST.get("description")
@@ -412,7 +411,7 @@ def edit_product(request, product_id):
         product.save()
         return redirect("vendor:prodCatdetail",c_slug=product.category.slug,product_slug=product.slug)
 
-    # ✅ now categories will be available in template
+    
     return render(request,"edit_product.html",{"product": product, "categories": categories})
 
 
@@ -438,7 +437,7 @@ def delete_product(request, product_id):
     if request.method == "POST":
         product.delete()
         # messages.success(request, "Product deleted successfully.")
-        return redirect('vendor:vendor')  # redirect to vendor product list
+        return redirect('vendor:vendor')  
 
     messages.error(request, "Invalid request.")
     return redirect('vendor:vendor')
@@ -460,7 +459,7 @@ def delete_product(request, product_id):
 
 
 def product_search_vendor(request):
-    # get vendor from session
+    
     vendor_email = request.session.get('vendor_email')
     vendor = get_object_or_404(VendorRegister, email=vendor_email)
 
@@ -468,7 +467,7 @@ def product_search_vendor(request):
 
     if query:
         products = Product.objects.filter(
-            vendor=vendor  # ✅ only this vendor's products
+            vendor=vendor  
         ).filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
@@ -476,9 +475,9 @@ def product_search_vendor(request):
             
         )
     else: 
-        products = Product.objects.filter(vendor=vendor)  # ✅ only this vendor
+        products = Product.objects.filter(vendor=vendor)  
 
-    # Pagination (8 per page)
+    
     paginator = Paginator(products, 8)
     page_number = request.GET.get('page')
     products_page = paginator.get_page(page_number)
@@ -513,22 +512,43 @@ def vendor_orders(request, vendor_id):
     return render(request, 'vendor_orders.html', context)
 
 
-def cancel_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+def cancel_order_item(request, item_id):
+    order_item = get_object_or_404(OrderItem, id=item_id)
 
     if request.method == "POST":
-        if order.status != "Cancelled" and order.status != "Delivered":
-            order.status = "Cancelled"
-            order.save()
-            messages.success(request, f"Order #{order.id} has been cancelled.")
+        if order_item.status != "Cancelled" and order_item.status != "Delivered":
+            order_item.status = "Cancelled"
+            order_item.save()
+            messages.success(request, f"Item '{order_item.product.name}' has been cancelled.")
+
+            # Optional: if all items in this order are cancelled, cancel the order
+            order = order_item.order
+            if all(item.status == "Cancelled" for item in order.items.all()):
+                order.status = "Cancelled"
+                order.save()
         else:
-            messages.info(request, "This order cannot be cancelled.")
+            messages.info(request, "This item cannot be cancelled.")
 
-    # Get vendor from first item in order
-    first_item = order.items.first()  # adjust 'items' if your related_name is different
-    vendor_id = first_item.product.vendor.id
-
+    vendor_id = order_item.product.vendor.id
     return redirect('vendor:vendor_orders', vendor_id)
+
+
+# def cancel_order(request, order_id):
+#     order = get_object_or_404(Order, id=order_id)
+
+#     if request.method == "POST":
+#         if order.status != "Cancelled" and order.status != "Delivered":
+#             order.status = "Cancelled"
+#             order.save()
+#             messages.success(request, f"Order #{order.id} has been cancelled.")
+#         else:
+#             messages.info(request, "This order cannot be cancelled.")
+
+#     # Get vendor from first item in order
+#     first_item = order.items.first()  # adjust 'items' if your related_name is different
+#     vendor_id = first_item.product.vendor.id
+
+#     return redirect('vendor:vendor_orders', vendor_id)
 
 
 

@@ -37,7 +37,7 @@ def custom_admin_home(request):
 
 
 def is_admin_user(user):
-    return user.is_authenticated and user.is_staff
+    return user.is_authenticated and user.is_staff #Is this user an admin who is logged in?
 
 def custom_admin_login(request):
     if request.method == "POST":
@@ -158,7 +158,7 @@ def custom_admin_vendor_delete(request, vendor_id):
 
 
         
-# List all categories
+
 def custom_admin_category_list(request):
     categories = Category.objects.all()
     return render(request, "custom_admin_category_list.html", {"categories": categories})

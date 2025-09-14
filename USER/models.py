@@ -21,13 +21,13 @@ class Register(models.Model):
     
 
 class Cart(models.Model):
-    user = models.ForeignKey(Register, on_delete=models.CASCADE)  # who owns this cart
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)  # product in the cart
-    quantity = models.PositiveIntegerField(default=1)  # number of items
-    date_added = models.DateTimeField(auto_now_add=True)  # when added
+    user = models.ForeignKey(Register, on_delete=models.CASCADE)  
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)  
+    quantity = models.PositiveIntegerField(default=1) 
+    date_added = models.DateTimeField(auto_now_add=True)  
 
     class Meta:
-        unique_together = ('user', 'product')  # avoid duplicates for same product per user
+        unique_together = ('user', 'product')  
 
     def __str__(self):
         return f"{self.user.name} - {self.product.name} ({self.quantity})"
@@ -58,7 +58,7 @@ class Order(models.Model):
 
     @property
     def total_amount(self):
-        return sum(item.price * item.quantity for item in self.items.all())
+        return sum(item.product.final_price * item.quantity for item in self.items.all())
 
 
 class OrderItem(models.Model):
@@ -87,7 +87,7 @@ class OrderItem(models.Model):
 class Review(models.Model):
     user = models.ForeignKey(Register, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(default=0)  # 1 to 5
+    rating = models.PositiveIntegerField(default=0)  
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -41,10 +41,10 @@ class Product(models.Model):
 
     vendor = models.ForeignKey('VendorRegister',on_delete=models.CASCADE,related_name='products',help_text="Vendor who added the product")
 
-    # Optional discount percentage (0–100)
+    
     discount = models.PositiveIntegerField(default=0, help_text="Discount in percentage")
 
-    # Multiple images for the product
+    
     image = models.ImageField(upload_to='products', blank=True)
     image2 = models.ImageField(upload_to='products', blank=True)
     image3 = models.ImageField(upload_to='products', blank=True)
@@ -77,13 +77,13 @@ class Product(models.Model):
         base_slug = slugify(self.name)
         slug = base_slug
         counter = 1
-    # ensure unique slug (avoid conflicts with other products)
+    
         while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
         self.slug = slug
 
-    # ensure stock is never None
+    
         if self.stock is None:
             self.stock = 0
         elif isinstance(self.stock, str):
@@ -92,7 +92,7 @@ class Product(models.Model):
             except ValueError:
                 self.stock = 0    
 
-    # availability based on stock
+    
         self.available = self.stock > 0
 
         super().save(*args, **kwargs)

@@ -21,12 +21,19 @@
       <tr>
         <td>{{ item.product.name }}</td>
         <td>{{ item.quantity }}</td>
-        <td>₹{{ item.product.price }}</td>
-        <td>₹{{ item.product.price|floatformat:2|add:""|add:item.quantity }}</td>
+        <td>₹{{ item.product.final_price }}</td>
+        <!-- <td>₹{{ item.product.price|floatformat:2|add:""|add:item.quantity }}</td> -->
+         <td>₹{{ item.total_price|floatformat:2 }}</td>
+         
       </tr>
       {% empty %}
       <tr><td colspan="4">Your cart is empty.</td></tr>
       {% endfor %}
+      
+     <tr>
+  <td colspan="4" class="text-end"><strong>TOTAL: ₹{{ total_amount }}</strong></td>
+</tr>
+
     </tbody>
   </table>
 

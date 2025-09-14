@@ -6,13 +6,13 @@ from django.db import models
 from django.urls import reverse
 
 class Category(models.Model):
-    name = models.CharField(max_length=250, unique=True)  # Category name
-    slug = models.SlugField(max_length=250, unique=True,blank=True)  # URL-friendly identifier
-    description = models.TextField(blank=True)  # Optional description
-    image = models.ImageField(upload_to='category', blank=True)  # Optional category image
+    name = models.CharField(max_length=250, unique=True)  
+    slug = models.SlugField(max_length=250, unique=True,blank=True)  
+    description = models.TextField(blank=True)  
+    image = models.ImageField(upload_to='category', blank=True)  
 
     parent = models.ForeignKey(
-        'self',                # references the same model
+        'self',                
         on_delete=models.CASCADE, 
         related_name='subcategories', 
         blank=True, 
@@ -20,7 +20,7 @@ class Category(models.Model):
     )
 
     class Meta:
-        ordering = ('name',)  # Sort by name by default
+        ordering = ('name',)  
         verbose_name = 'category'
         verbose_name_plural = 'categories'
 

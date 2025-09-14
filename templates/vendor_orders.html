@@ -192,26 +192,39 @@ p {
                   ₹{{ item.product.price }}
                 {% endif %}</td>
                             <td>₹{{ item.subtotal }}</td>
-                            <td>{{ data.order.status }}</td>
+                            <!-- <td>{{ data.order.status }}</td> -->
+                             <td>{{ item.status }}</td>
+
  <td>
-  {% if data.order.status == "Cancelled" %}
+  {% if item.status == "Cancelled" %}
     <button class="btn btn-dark btn-sm" disabled>Cancelled</button>
-  {% elif data.order.status == "Delivered" %}
+  {% elif item.status == "Delivered" %}
     <button class="btn btn-secondary btn-sm" disabled>Delivered</button>
   {% else %}
-    <form method="post" action="{% url 'vendor:cancel_order' data.order.id %}" style="display:inline;" 
-          onsubmit="return confirm('Are you sure you want to cancel this order?');">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-dark btn-sm">Cancel Order</button>
+    <form method="post" action="{% url 'vendor:cancel_order_item' item.id %}" style="display:inline;"
+          onsubmit="return confirm('Are you sure you want to cancel this item?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-dark btn-sm">Cancel Item</button>
     </form>
   {% endif %}
 </td>
+
 
 
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+
+                 <!-- {% if data.order.status != "Cancelled" and data.order.status != "Delivered" %}
+            <form method="post" action="{% url 'vendor:cancel_order' data.order.id %}" 
+                  onsubmit="return confirm('Are you sure you want to cancel this whole order?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mt-3">Cancel Order</button>
+            </form>
+        {% else %}
+            <button class="btn btn-secondary mt-3" disabled>Order {{ data.order.status }}</button>
+        {% endif %} -->
             </div>
         </div>
     {% endfor %}
